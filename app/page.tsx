@@ -7,8 +7,51 @@ import {
   Send, ShieldCheck, Smile, Sparkles, Star, Stethoscope, X,
 } from 'lucide-react';
 import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { doctorsSeed, reviewsSeed, servicesSeed } from '@/db/schema';
 
 const heroPhoto = '/akadent-media/clinic-01.jpg';
+type Lang = 'ru' | 'kk';
+type ServiceItem = { id: string; slug: string; title_ru: string; title_kk: string; description_ru: string; description_kk: string; price_from: number; price_to: number | null; unit: string };
+type DoctorItem = { slug: string; name_ru: string; name_kk: string; role_ru: string; role_kk: string; bio_ru: string; bio_kk: string; focus_ru: string; focus_kk: string; image_url: string };
+type ReviewItem = { id: string; author: string; rating: number; body_ru: string; body_kk: string; source_url: string; published_at: string };
+type PublicData = { settings: Array<{ key: string; value_ru: string; value_kk: string }>; services: ServiceItem[]; doctors: DoctorItem[]; reviews: ReviewItem[] };
+
+const copy = {
+  ru: {
+    nav: ['Услуги', 'Как мы лечим', 'Отзывы', 'Цены', 'Вопросы'], menu: 'Меню', book: 'Записаться',
+    schedule: 'Пн–Пт · 09:00–19:00', badge: 'Стоматология полного цикла · Караганда',
+    hero1: 'Лечим так,', hero2: 'чтобы', words: ['не переделывать', 'сохранить своё', 'вернуть уверенность'],
+    heroText: 'Команда AKA-DENT восстанавливает здоровье, эстетику и жевательную функцию — от 3D-диагностики до имплантации и протезирования в одном месте.',
+    whatsapp: 'Записаться в WhatsApp', meet: 'Познакомиться с врачами', ratings: '338 оценок и 241 отзыв в 2GIS',
+    open: 'Открыты для записи', consult: 'Консультация от 2 000 ₸ · ул. Комиссарова, 28',
+    servicesEye: 'Полный цикл', servicesTitle: 'Всё лечение — по одному понятному плану', servicesText: 'Цены и описания обновляются из панели управления. Точную стоимость врач подтверждает после диагностики.', details: 'Подробнее',
+    teamEye: 'Команда AKA-DENT', teamTitle: 'У каждого врача — своё направление и личная страница', teamText: 'Откройте профиль, узнайте специализацию и запишитесь к выбранному врачу.', chooseDoctor: 'Открыть профиль',
+    processEye: 'Путь пациента', processTitle: 'Сначала понимаем. Потом лечим.', processText: 'Диагностика, прозрачный маршрут и лечение только после согласования.', step: 'Шаг',
+    reviewsEye: 'Последние отзывы', reviewsTitle: 'Репутация, которую можно проверить', reviewsLink: 'Все отзывы в 2GIS', reviewSource: 'проверенный отзыв · 2GIS',
+    pricesEye: 'Открытый прайс', pricesTitle: 'Стоимость до визита, а не после', pricesText: 'Актуальные стартовые цены управляются клиникой через защищённую админ-панель.', from: 'от', priceNote: 'Цены указаны «от» и не являются публичной офертой. Точная стоимость определяется после осмотра.',
+    faqEye: 'Частые вопросы', faqTitle: 'Честно о важном', faqText: 'Если не нашли ответ — напишите администратору. Поможем выбрать врача и удобное время.',
+    ctaBadge: 'Готовы помочь', ctaTitle: 'Начните с разговора, а не с лечения', ctaText: 'Оставьте имя и номер. Заявка сохранится в панели клиники, затем откроется WhatsApp с готовым сообщением.', name: 'Ваше имя', phone: '+7 ___ ___ __ __', send: 'Записаться', sending: 'Сохраняем', sent: 'Заявка сохранена. WhatsApp открыт — осталось отправить сообщение.', privacy: 'Без рассылок. Контакты используются только для связи по вашей записи.',
+    address: 'Адрес', booking: 'Запись', hours: 'График', city: 'Новый город · Караганда', callWa: 'Звонок или WhatsApp', weekend: 'Сб 09:00–15:00 · Вс выходной',
+    footerText: 'Стоматология полного цикла в Караганде. Лечим так, чтобы не переделывать.', clinic: 'О клинике', support: 'Поддержка', admin: 'Панель управления', disclaimer: 'Информация на сайте не заменяет консультацию врача',
+  },
+  kk: {
+    nav: ['Қызметтер', 'Қалай емдейміз', 'Пікірлер', 'Бағалар', 'Сұрақтар'], menu: 'Мәзір', book: 'Жазылу',
+    schedule: 'Дс–Жм · 09:00–19:00', badge: 'Толық циклді стоматология · Қарағанды',
+    hero1: 'Емдейміз,', hero2: 'қайта жасатпау үшін', words: ['табиғи тісті сақтау', 'сенімді қайтару', 'нәтижені бекіту'],
+    heroText: 'AKA-DENT командасы денсаулықты, эстетиканы және шайнау қызметін бір жерде қалпына келтіреді: 3D-диагностикадан имплантация мен протездеуге дейін.',
+    whatsapp: 'WhatsApp арқылы жазылу', meet: 'Дәрігерлермен танысу', ratings: '2GIS-та 338 баға және 241 пікір',
+    open: 'Жазылуға ашықпыз', consult: 'Кеңес 2 000 ₸ бастап · Комиссаров көш., 28',
+    servicesEye: 'Толық цикл', servicesTitle: 'Барлық ем — бір түсінікті жоспармен', servicesText: 'Бағалар мен сипаттамалар басқару панелінен жаңартылады. Нақты құнын дәрігер диагностикадан кейін растайды.', details: 'Толығырақ',
+    teamEye: 'AKA-DENT командасы', teamTitle: 'Әр дәрігердің жеке бағыты және өз парақшасы бар', teamText: 'Профильді ашып, мамандануын біліп, таңдаған дәрігерге жазылыңыз.', chooseDoctor: 'Профильді ашу',
+    processEye: 'Пациент жолы', processTitle: 'Алдымен түсінеміз. Содан кейін емдейміз.', processText: 'Диагностика, ашық жоспар және тек келісілгеннен кейінгі ем.', step: 'Қадам',
+    reviewsEye: 'Соңғы пікірлер', reviewsTitle: 'Тексеруге болатын бедел', reviewsLink: '2GIS-тағы барлық пікір', reviewSource: 'тексерілген пікір · 2GIS',
+    pricesEye: 'Ашық прайс', pricesTitle: 'Құны қабылдауға дейін белгілі', pricesText: 'Өзекті бастапқы бағаларды клиника қорғалған басқару панелі арқылы жаңартады.', from: 'бастап', priceNote: 'Бағалар бастапқы мәнде көрсетілген және жария оферта емес. Нақты құн тексеруден кейін анықталады.',
+    faqEye: 'Жиі сұрақтар', faqTitle: 'Маңыздысы туралы ашық', faqText: 'Жауап табылмаса, әкімшіге жазыңыз. Дәрігер мен ыңғайлы уақытты таңдауға көмектесеміз.',
+    ctaBadge: 'Көмектесуге дайынбыз', ctaTitle: 'Емнен емес, әңгімеден бастаңыз', ctaText: 'Атыңыз бен нөміріңізді қалдырыңыз. Өтінім клиника панеліне сақталып, WhatsApp-та дайын хабарлама ашылады.', name: 'Атыңыз', phone: '+7 ___ ___ __ __', send: 'Жазылу', sending: 'Сақталуда', sent: 'Өтінім сақталды. WhatsApp ашылды — хабарламаны жіберу ғана қалды.', privacy: 'Жарнама жібермейміз. Байланыс деректері тек жазылу үшін қолданылады.',
+    address: 'Мекенжай', booking: 'Жазылу', hours: 'Жұмыс уақыты', city: 'Жаңа қала · Қарағанды', callWa: 'Қоңырау немесе WhatsApp', weekend: 'Сб 09:00–15:00 · Жс демалыс',
+    footerText: 'Қарағандыдағы толық циклді стоматология. Қайта жасатпау үшін сапалы емдейміз.', clinic: 'Клиника туралы', support: 'Қолдау', admin: 'Басқару панелі', disclaimer: 'Сайттағы ақпарат дәрігер кеңесін алмастырмайды',
+  },
+} as const;
 const avatars = [
   'https://images.unsplash.com/photo-1494790108755-2616b612b786?auto=format&fit=crop&w=160&q=90',
   'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=160&q=90',
@@ -22,7 +65,7 @@ const stats = [
   { value: 241, suffix: '', label: 'подробный отзыв', trend: 'открыты к диалогу' },
   { value: 18, suffix: '', label: 'фото в 2GIS', trend: 'без фотостоков' },
 ];
-const faqs = [
+const faqsRu = [
   { q: 'Сколько стоит консультация?', a: 'В опубликованном прайсе 2GIS консультация стоит от 2 000 до 5 000 ₸. Точная стоимость зависит от специалиста и формата приёма — администратор уточнит её при записи.' },
   { q: 'Можно ли сразу сделать 3D-снимок?', a: 'Да. На том же адресе работает центр Aqyl-SCAN. В карточке указаны КТ зубов, ОПТГ и прицельные снимки — врач подскажет, какой формат нужен именно вам.' },
   { q: 'Когда работает клиника?', a: 'AKA-DENT принимает с понедельника по пятницу с 09:00 до 19:00, в субботу с 09:00 до 15:00. Воскресенье — выходной.' },
@@ -30,8 +73,18 @@ const faqs = [
   { q: 'Сколько стоит имплантация?', a: 'Опубликованная стартовая цена импланта — от 90 000 ₸. Итог зависит от снимка, системы импланта, объёма хирургии и будущей коронки.' },
   { q: 'Как подготовиться к первому визиту?', a: 'Возьмите удостоверение личности и имеющиеся снимки, если они сделаны недавно. Запишите лекарства и хронические заболевания — это поможет врачу безопасно составить план.' },
 ];
+const faqsKk = [
+  { q: 'Кеңес қанша тұрады?', a: '2GIS-та жарияланған прайс бойынша кеңес 2 000–5 000 ₸ тұрады. Нақты бағаны әкімші жазылу кезінде нақтылайды.' },
+  { q: '3D-суретті бірден түсіруге бола ма?', a: 'Иә. Осы мекенжайда Aqyl-SCAN орталығы жұмыс істейді: КТ, ОПТГ және нысаналы суреттер.' },
+  { q: 'Клиника қашан жұмыс істейді?', a: 'Дүйсенбі–жұма 09:00–19:00, сенбі 09:00–15:00. Жексенбі — демалыс.' },
+  { q: 'Қандай төлем тәсілдері бар?', a: 'Картамен, қолма-қол немесе QR-кодпен төлеуге болады. Бөліп төлеудің өзекті шарттарын әкімшіден сұраңыз.' },
+  { q: 'Имплантация қанша тұрады?', a: 'Импланттың бастапқы бағасы — 90 000 ₸. Қорытынды құн суретке, жүйеге, хирургия көлеміне және тәжге байланысты.' },
+  { q: 'Алғашқы қабылдауға қалай дайындаламын?', a: 'Жеке куәлігіңізді және бар болса соңғы суреттерді әкеліңіз. Қабылдайтын дәрілер мен созылмалы ауруларды айтыңыз.' },
+];
 
 export default function Home() {
+  const [lang, setLang] = useState<Lang>('ru');
+  const [publicData, setPublicData] = useState<PublicData | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
@@ -40,17 +93,48 @@ export default function Home() {
   const [lineActive, setLineActive] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [contact, setContact] = useState('');
+  const [booking, setBooking] = useState({ name: '', phone: '', website: '' });
   const heroImageRef = useRef<HTMLImageElement>(null);
   const statsRef = useRef<HTMLElement>(null);
   const processRef = useRef<HTMLElement>(null);
   const counterStarted = useRef(false);
-  const typedWords = ['не переделывать', 'сохранить своё', 'вернуть уверенность'];
+  const t = copy[lang];
+  const typedWords = t.words;
+  const services: ServiceItem[] = publicData?.services ?? servicesSeed.map((item) => ({ ...item }));
+  const doctors: DoctorItem[] = publicData?.doctors ?? doctorsSeed.map((item) => ({ ...item }));
+  const reviews: ReviewItem[] = publicData?.reviews ?? reviewsSeed.map((item) => ({ ...item }));
+  const localizedStats = lang === 'kk' ? [
+    { ...stats[0], label: '2GIS рейтингі', trend: 'расталған' }, { ...stats[1], label: 'пациент бағасы', trend: 'нақты келулер' },
+    { ...stats[2], label: 'толық пікір', trend: 'ашық диалог' }, { ...stats[3], label: '2GIS-тағы фото', trend: 'өз фотоларымыз' },
+  ] : stats;
+  const faqs = lang === 'kk' ? faqsKk : faqsRu;
+
+  useEffect(() => {
+    const stored = window.localStorage.getItem('akadent-language');
+    if (stored === 'kk' || stored === 'ru') setLang(stored);
+  }, []);
+  const changeLanguage = useCallback((next: Lang) => {
+    setLang(next);
+    window.localStorage.setItem('akadent-language', next);
+    document.documentElement.lang = next === 'kk' ? 'kk' : 'ru';
+  }, []);
+  useEffect(() => {
+    let active = true;
+    const load = async () => {
+      try {
+        const response = await fetch('/api/public-data', { cache: 'no-store' });
+        if (response.ok && active) setPublicData(await response.json() as PublicData);
+      } catch { /* keep the static shell available */ }
+    };
+    void load();
+    const interval = window.setInterval(load, 60_000);
+    return () => { active = false; window.clearInterval(interval); };
+  }, []);
 
   useEffect(() => {
     const interval = window.setInterval(() => setWordIndex((current) => (current + 1) % typedWords.length), 2200);
     return () => window.clearInterval(interval);
-  }, []);
+  }, [typedWords.length]);
   useEffect(() => {
     let raf = 0;
     const updateScroll = () => {
@@ -107,15 +191,19 @@ export default function Home() {
     return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', onKey); };
   }, [menuOpen]);
 
-  const handleSubmit = useCallback((event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = useCallback(async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSubmitting(true);
-    window.setTimeout(() => {
-      window.open('https://wa.me/77001215454?text=' + encodeURIComponent('Здравствуйте! Хочу записаться в AKA-DENT. Мой номер: ' + contact), '_blank', 'noopener,noreferrer');
-      setSubmitting(false);
+    try {
+      const response = await fetch('/api/appointments', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...booking, language: lang }) });
+      const result = await response.json() as { whatsappUrl?: string };
+      if (!response.ok || !result.whatsappUrl) throw new Error('save_failed');
       setSubmitted(true);
-    }, 900);
-  }, [contact]);
+      window.open(result.whatsappUrl, '_blank', 'noopener,noreferrer');
+    } finally {
+      setSubmitting(false);
+    }
+  }, [booking, lang]);
 
   return (
     <main className="aurora-page">
@@ -125,14 +213,14 @@ export default function Home() {
             <span className="brand-mark"><span /><span /><span /></span>
             <span><span className="block text-[17px] font-extrabold tracking-[.18em] text-[#111E61]">AKA-DENT</span><span className="block text-[7px] font-bold uppercase tracking-[.28em] text-[#7580A8]">стоматология</span></span>
           </a>
-          <nav className="hidden items-center gap-8 text-[13px] font-semibold lg:flex" aria-label="Основная навигация">
-            <a className="nav-link" href="#services">Услуги</a><a className="nav-link" href="#process">Как мы лечим</a>
-            <a className="nav-link" href="#reviews">Отзывы</a><a className="nav-link" href="#prices">Цены</a><a className="nav-link" href="#faq">FAQ</a>
+          <nav className="hidden items-center gap-8 text-[13px] font-semibold lg:flex" aria-label={lang === 'kk' ? 'Негізгі навигация' : 'Основная навигация'}>
+            {t.nav.map((label, index) => <a key={label} className="nav-link" href={['#services','#process','#reviews','#prices','#faq'][index]}>{label}</a>)}
           </nav>
           <div className="flex items-center gap-2">
-            <a href="tel:+77001215454" className="hidden text-right md:block"><span className="block text-[10px] font-bold uppercase tracking-[.13em] text-[#7380A6]">Пн–Пт · 09:00–19:00</span><span className="mt-1 block text-sm font-extrabold text-[#111E61]">+7 700 121-54-54</span></a>
-            <a href="#booking" className="primary-btn hidden px-5 py-3 text-[12px] font-bold sm:inline-flex">Записаться <ArrowUpRight size={15} aria-hidden="true" /></a>
-            <button type="button" onClick={() => setMenuOpen(true)} className="grid h-11 w-11 place-items-center rounded-full border border-black/10 bg-white/60 lg:hidden" aria-label="Открыть меню" aria-expanded={menuOpen}><Menu size={19} /></button>
+            <div className="lang-switch" aria-label="Тіл / Язык"><button type="button" className={lang === 'ru' ? 'active' : ''} onClick={() => changeLanguage('ru')}>RU</button><button type="button" className={lang === 'kk' ? 'active' : ''} onClick={() => changeLanguage('kk')}>KZ</button></div>
+            <a href="tel:+77001215454" className="hidden text-right md:block"><span className="block text-[10px] font-bold uppercase tracking-[.13em] text-[#7380A6]">{t.schedule}</span><span className="mt-1 block text-sm font-extrabold text-[#111E61]">+7 700 121-54-54</span></a>
+            <a href="#booking" className="primary-btn hidden px-5 py-3 text-[12px] font-bold sm:inline-flex">{t.book} <ArrowUpRight size={15} aria-hidden="true" /></a>
+            <button type="button" onClick={() => setMenuOpen(true)} className="grid h-11 w-11 place-items-center rounded-full border border-black/10 bg-white/60 lg:hidden" aria-label={t.menu} aria-expanded={menuOpen}><Menu size={19} /></button>
           </div>
         </div>
       </header>
@@ -140,9 +228,9 @@ export default function Home() {
       <div className={'mobile-layer ' + (menuOpen ? 'open' : '')} onClick={() => setMenuOpen(false)} aria-hidden={!menuOpen}>
         <div className="mobile-drawer" onClick={(event) => event.stopPropagation()}>
           <button type="button" className="absolute right-5 top-5 grid h-11 w-11 place-items-center rounded-full border border-black/10" onClick={() => setMenuOpen(false)} aria-label="Закрыть меню"><X size={19} /></button>
-          <div className="display mb-9 text-4xl font-semibold">Меню</div>
+          <div className="display mb-9 text-4xl font-semibold">{t.menu}</div>
           <nav className="flex flex-col gap-1 text-xl font-semibold" aria-label="Мобильная навигация">
-            {[['Услуги', '#services'], ['Как мы лечим', '#process'], ['Отзывы', '#reviews'], ['Цены', '#prices'], ['Вопросы и ответы', '#faq']].map(([label, href]) => (
+            {t.nav.map((label, index) => ([label, ['#services','#process','#reviews','#prices','#faq'][index]])).map(([label, href]) => (
               <a key={href} href={href} onClick={() => setMenuOpen(false)} className="flex items-center justify-between border-b border-black/[.07] py-4">{label}<ArrowUpRight size={18} /></a>
             ))}
           </nav>
@@ -157,26 +245,26 @@ export default function Home() {
         <div className="site-container hero-content">
           <div className="max-w-[910px]">
             <div className="hero-enter mb-7 inline-flex items-center gap-2 rounded-full border border-[#3247C5]/20 bg-white/80 px-4 py-2 text-[11px] font-extrabold uppercase tracking-[.14em] text-[#1D318D] shadow-sm backdrop-blur" style={{ animationDelay: '0ms', animationDuration: '600ms' }}>
-              <span className="h-2 w-2 rounded-full bg-[#3247C5] shadow-[0_0_0_5px_rgba(50,71,197,.14)]" style={{ animation: 'badge-pulse 2s infinite' }} />Стоматология полного цикла · Караганда
+              <span className="h-2 w-2 rounded-full bg-[#3247C5] shadow-[0_0_0_5px_rgba(50,71,197,.14)]" style={{ animation: 'badge-pulse 2s infinite' }} />{t.badge}
             </div>
             <h1 className="hero-title">
-              <span className="hero-enter block" style={{ animationDelay: '100ms', animationDuration: '800ms' }}>Лечим так,</span>
-              <span className="hero-enter block" style={{ animationDelay: '200ms', animationDuration: '800ms' }}>чтобы <span key={wordIndex} className="typed-word gradient-text italic">{typedWords[wordIndex]}</span></span>
+              <span className="hero-enter block" style={{ animationDelay: '100ms', animationDuration: '800ms' }}>{t.hero1}</span>
+              <span className="hero-enter block" style={{ animationDelay: '200ms', animationDuration: '800ms' }}>{t.hero2} <span key={lang + wordIndex} className="typed-word gradient-text italic">{typedWords[wordIndex]}</span></span>
             </h1>
-            <p className="hero-enter mt-8 max-w-[620px] text-[clamp(17px,2vw,21px)] leading-[1.65] text-[#46506D]" style={{ animationDelay: '350ms', animationDuration: '700ms' }}>Команда AKA-DENT восстанавливает здоровье, эстетику и жевательную функцию — от 3D-диагностики до имплантации и протезирования в одном месте.</p>
+            <p className="hero-enter mt-8 max-w-[620px] text-[clamp(17px,2vw,21px)] leading-[1.65] text-[#46506D]" style={{ animationDelay: '350ms', animationDuration: '700ms' }}>{t.heroText}</p>
             <div className="hero-actions hero-enter mt-9 flex flex-wrap gap-3" style={{ animationDelay: '500ms', animationDuration: '600ms' }}>
-              <a href="https://wa.me/77001215454?text=Здравствуйте!%20Хочу%20записаться%20на%20консультацию%20в%20AKA-DENT" target="_blank" rel="noreferrer" className="primary-btn px-7 py-4 text-[13px] font-bold">Записаться в WhatsApp <ArrowUpRight size={18} /></a>
-              <a href="#doctors" className="ghost-btn px-7 py-4 text-[13px] font-bold"><Play size={16} fill="currentColor" /> Познакомиться с врачами</a>
+              <a href="#booking" className="primary-btn px-7 py-4 text-[13px] font-bold">{t.whatsapp} <ArrowUpRight size={18} /></a>
+              <a href="#doctors" className="ghost-btn px-7 py-4 text-[13px] font-bold"><Play size={16} fill="currentColor" /> {t.meet}</a>
             </div>
             <div className="hero-enter mt-9 flex flex-wrap items-center gap-4" style={{ animationDelay: '650ms', animationDuration: '600ms' }}>
               <div className="avatar-stack flex">{avatars.slice(0, 4).map((src, index) => <img key={src} src={src} alt={'Пациент AKA-DENT ' + (index + 1)} loading="lazy" decoding="async" />)}</div>
-              <div><div className="flex items-center gap-1 text-[#F4A629]" aria-label="Рейтинг 4,9 из 5">{[0,1,2,3,4].map((star) => <Star key={star} size={14} fill="currentColor" />)}<span className="ml-1 text-xs font-extrabold text-[#111E61]">4,9</span></div><p className="mt-1 text-xs font-semibold text-[#4A556D]"><strong className="text-[#0F0F0F]">338 оценок</strong> и 241 отзыв в 2GIS</p></div>
+              <div><div className="flex items-center gap-1 text-[#F4A629]" aria-label="4,9 / 5">{[0,1,2,3,4].map((star) => <Star key={star} size={14} fill="currentColor" />)}<span className="ml-1 text-xs font-extrabold text-[#111E61]">4,9</span></div><p className="mt-1 text-xs font-semibold text-[#4A556D]"><strong className="text-[#0F0F0F]">{t.ratings}</strong></p></div>
             </div>
           </div>
         </div>
         <div className="hero-note hidden xl:block">
-          <div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-full bg-[#EEF1FF] text-[#3247C5]"><Clock size={19} /></span><div><div className="text-[11px] font-bold uppercase tracking-[.12em] text-[#708087]">Открыты для записи</div><div className="mt-1 text-sm font-bold">Пн–Пт · 09:00–19:00</div></div></div>
-          <div className="mt-4 border-t border-black/[.07] pt-4 text-xs leading-relaxed text-[#556269]">Консультация от 2 000 ₸ · ул. Комиссарова, 28</div>
+          <div className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-full bg-[#EEF1FF] text-[#3247C5]"><Clock size={19} /></span><div><div className="text-[11px] font-bold uppercase tracking-[.12em] text-[#708087]">{t.open}</div><div className="mt-1 text-sm font-bold">{t.schedule}</div></div></div>
+          <div className="mt-4 border-t border-black/[.07] pt-4 text-xs leading-relaxed text-[#556269]">{t.consult}</div>
         </div>
       </section>
 
@@ -188,72 +276,28 @@ export default function Home() {
       <section id="services" className="section-space">
         <div className="site-container">
           <div data-reveal className="mb-14 grid gap-7 lg:grid-cols-[1fr_.65fr] lg:items-end">
-            <div><span className="eyebrow">Полный цикл</span><h2 className="section-title mt-5 max-w-[720px]">От причины — к результату</h2></div>
-            <p className="max-w-[470px] text-[15px] leading-7 text-[#667178] lg:justify-self-end">Диагностика, лечение, хирургия и протезирование работают как единый маршрут. План объясняем до начала и не назначаем лишнего.</p>
+            <div><span className="eyebrow">{t.servicesEye}</span><h2 className="section-title mt-5 max-w-[760px]">{t.servicesTitle}</h2></div>
+            <p className="max-w-[470px] text-[15px] leading-7 text-[#667178] lg:justify-self-end">{t.servicesText}</p>
           </div>
-          <div className="grid gap-5 lg:grid-cols-12">
-            <article data-reveal className="feature-card large lg:col-span-7" style={{ transitionDelay: '0ms' }}>
-              <div className="feature-orb" /><div className="icon-box"><ScanLine size={24} /></div>
-              <div className="relative mt-auto pt-16">
-                <span className="mb-3 block text-[10px] font-bold uppercase tracking-[.16em] text-[#3247C5]">Диагностика</span>
-                <h3 className="card-title max-w-[420px]">КТ, ОПТГ и прицельный снимок</h3>
-                <p className="mt-4 max-w-[520px] text-sm leading-7 text-[#647077]">Свой центр Aqyl-SCAN по тому же адресу помогает получить точную картину без поездок по городу. Врач показывает снимок и объясняет каждый этап простым языком.</p>
-                <a href="#booking" className="more-link mt-6 inline-flex items-center gap-2">Подробнее <ArrowRight size={15} /></a>
-              </div>
-            </article>
-            <div className="grid gap-5 lg:col-span-5">
-              <article data-reveal className="feature-card" style={{ transitionDelay: '80ms' }}>
-                <div className="icon-box"><Microscope size={24} /></div><h3 className="card-title mt-8">Терапия</h3>
-                <p className="mt-3 text-sm leading-6 text-[#647077]">Лечение зубов от 25 000 ₸. По отзывам пациенты особенно ценят аккуратность, коффердам и понятные объяснения.</p>
-                <a href="#booking" className="more-link mt-auto inline-flex items-center gap-2 pt-5">Подробнее <ArrowRight size={15} /></a>
-              </article>
-              <article data-reveal className="feature-card" style={{ transitionDelay: '160ms' }}>
-                <div className="icon-box"><Heart size={24} /></div><h3 className="card-title mt-8">Хирургия</h3>
-                <p className="mt-3 text-sm leading-6 text-[#647077]">Сложные случаи удаления зубов мудрости — от 20 000 ₸. Бережно, с контролем самочувствия после приёма.</p>
-                <a href="#booking" className="more-link mt-auto inline-flex items-center gap-2 pt-5">Подробнее <ArrowRight size={15} /></a>
-              </article>
-            </div>
-            <div className="grid gap-5 lg:col-span-5">
-              <article data-reveal className="feature-card" style={{ transitionDelay: '240ms' }}>
-                <div className="icon-box"><Smile size={24} /></div><h3 className="card-title mt-8">Ортопедия</h3>
-                <p className="mt-3 text-sm leading-6 text-[#647077]">Съёмные и несъёмные протезы от 35 000 ₸, виниры — от 90 000 ₸.</p>
-                <a href="#booking" className="more-link mt-auto inline-flex items-center gap-2 pt-5">Подробнее <ArrowRight size={15} /></a>
-              </article>
-              <article data-reveal className="feature-card" style={{ transitionDelay: '320ms' }}>
-                <div className="icon-box"><ShieldCheck size={24} /></div><h3 className="card-title mt-8">Имплантация</h3>
-                <p className="mt-3 text-sm leading-6 text-[#647077]">Импланты от 90 000 ₸. Восстанавливаем не только улыбку, но и полноценную жевательную функцию.</p>
-                <a href="#booking" className="more-link mt-auto inline-flex items-center gap-2 pt-5">Подробнее <ArrowRight size={15} /></a>
-              </article>
-            </div>
-            <article data-reveal className="feature-card large lg:col-span-7" style={{ transitionDelay: '400ms' }}>
-              <div className="feature-orb" /><div className="icon-box"><Stethoscope size={24} /></div>
-              <div className="relative mt-auto pt-16">
-                <span className="mb-3 block text-[10px] font-bold uppercase tracking-[.16em] text-[#3247C5]">Команда</span>
-                <h3 className="card-title max-w-[430px]">Врачи одной клиники видят весь путь</h3>
-                <p className="mt-4 max-w-[520px] text-sm leading-7 text-[#647077]">Терапевт, хирург, имплантолог и ортопед работают по одному плану — от сохранения зуба до восстановления прикуса.</p>
-                <a href="#booking" className="more-link mt-6 inline-flex items-center gap-2">Познакомиться с командой <ArrowRight size={15} /></a>
-              </div>
-            </article>
+          <div className="services-live-grid">
+            {services.map((service, index) => {
+              const Icon = [ScanLine, Microscope, Heart, Smile, ShieldCheck, Stethoscope][index % 6];
+              return <article data-reveal key={service.id} className={'feature-card ' + (index === 0 || index === 5 ? 'large' : '')} style={{ transitionDelay: index * 80 + 'ms' }}>
+                <div className="feature-orb" /><div className="icon-box"><Icon size={24} /></div>
+                <div className="relative mt-auto pt-10"><span className="mb-3 block text-[10px] font-bold uppercase tracking-[.16em] text-[#3247C5]">{t.from} {service.price_from.toLocaleString(lang === 'kk' ? 'kk-KZ' : 'ru-RU')} ₸</span>
+                  <h3 className="card-title">{lang === 'kk' ? service.title_kk : service.title_ru}</h3><p className="mt-4 text-sm leading-7 text-[#647077]">{lang === 'kk' ? service.description_kk : service.description_ru}</p>
+                  <a href="#booking" className="more-link mt-6 inline-flex items-center gap-2">{t.details} <ArrowRight size={15} /></a></div>
+              </article>;
+            })}
           </div>
-          <div id="doctors" data-reveal className="team-stage mt-20 grid overflow-hidden rounded-[32px] lg:grid-cols-12">
-            <div className="relative min-h-[520px] lg:col-span-7">
-              <img src="/akadent-media/clinic-04.jpg" alt="Команда врачей стоматологии AKA-DENT" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0C164C]/80 via-transparent to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-7 text-white sm:p-10">
-                <div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-white/68">9 фотографий сотрудников в 2GIS</div>
-                <p className="display mt-3 max-w-[580px] text-[clamp(26px,4vw,44px)] font-bold leading-[1.03] tracking-[-.045em]">Не прячемся за красивыми словами. Вот наша команда.</p>
-              </div>
+          <div id="doctors" data-reveal className="mt-20">
+            <span className="eyebrow">{t.teamEye}</span><h2 className="section-title mt-5 max-w-[900px]">{t.teamTitle}</h2><p className="mt-5 max-w-[680px] text-sm leading-7 text-[#667178]">{t.teamText}</p>
+            <div className="doctor-profile-grid mt-10">
+              {doctors.map((doctor, index) => <a href={'/doctors/' + doctor.slug} key={doctor.slug} className="doctor-profile-card" style={{ transitionDelay: index * 80 + 'ms' }}>
+                <div className="doctor-profile-image"><img src={doctor.image_url} alt={lang === 'kk' ? doctor.name_kk : doctor.name_ru} loading="lazy" decoding="async" /></div>
+                <div className="doctor-profile-copy"><span>{lang === 'kk' ? doctor.role_kk : doctor.role_ru}</span><h3>{lang === 'kk' ? doctor.name_kk : doctor.name_ru}</h3><p>{lang === 'kk' ? doctor.focus_kk : doctor.focus_ru}</p><strong>{t.chooseDoctor} <ArrowUpRight size={16} /></strong></div>
+              </a>)}
             </div>
-            <div className="flex flex-col justify-between bg-[#111E61] p-7 text-white sm:p-10 lg:col-span-5">
-              <div><span className="inline-flex rounded-full border border-white/15 bg-white/10 px-3 py-2 text-[10px] font-bold uppercase tracking-[.13em]">Специалисты в прайсе 2GIS</span><h3 className="display mt-6 text-[clamp(28px,4vw,44px)] font-bold leading-[1.02] tracking-[-.045em]">Сильные руки.<br />Один план.</h3></div>
-              <div className="mt-10 divide-y divide-white/12">
-                {[['Бауржан Тайгуков','имплантолог · хирург · ортопед'],['Рустем Киздарбеков','стоматолог-ортопед'],['Мирамкуль Тайгукова','стоматолог-терапевт'],['Ермек Болигуб','стоматолог общего профиля']].map(([name,role]) => <div key={name} className="py-4"><div className="font-bold">{name}</div><div className="mt-1 text-xs text-white/55">{role}</div></div>)}
-              </div>
-              <a href="https://wa.me/77001215454?text=Здравствуйте!%20Помогите%20выбрать%20врача%20AKA-DENT" target="_blank" rel="noreferrer" className="mt-8 inline-flex items-center justify-between rounded-full bg-white px-6 py-4 text-sm font-extrabold text-[#111E61] transition-transform hover:-translate-y-1">Подобрать врача <ArrowUpRight size={18} /></a>
-            </div>
-          </div>
-          <div className="mt-5 grid gap-5 sm:grid-cols-3">
-            {[['/akadent-media/clinic-02.jpg','Терапия','Точность в деталях'],['/akadent-media/clinic-03.jpg','Ортопедия','Восстановление функции'],['/akadent-media/clinic-05.jpg','Команда','Специалисты рядом']].map(([src,label,title],index) => <figure data-reveal key={src} className="doctor-shot group" style={{ transitionDelay: index * 80 + 'ms' }}><img src={src} alt={title + ' в AKA-DENT'} loading="lazy" decoding="async" /><figcaption><span>{label}</span><strong>{title}</strong></figcaption></figure>)}
           </div>
         </div>
       </section>
@@ -261,7 +305,7 @@ export default function Home() {
       <section ref={statsRef} className="stats-panel py-[clamp(64px,8vw,100px)]">
         <div className="site-container relative z-10">
           <div data-reveal className="grid grid-cols-2 gap-y-12 lg:grid-cols-4 lg:gap-y-0">
-            {stats.map((stat, index) => (
+            {localizedStats.map((stat, index) => (
               <div className="stat-item" key={stat.label}>
                 <div className="stat-number">{counts[index].toLocaleString('ru-RU', { maximumFractionDigits: 1 })}{stat.suffix}</div>
                 <div className="mt-5 text-[10px] font-extrabold uppercase tracking-[.15em] text-white/70">{stat.label}</div>
@@ -275,9 +319,9 @@ export default function Home() {
       <section id="process" ref={processRef} className="section-space">
         <div className="site-container">
           <div data-reveal className="mx-auto mb-16 max-w-[720px] text-center">
-            <span className="eyebrow">Путь пациента</span>
-            <h2 className="section-title mt-5">Сначала понимаем. Потом лечим.</h2>
-            <p className="mx-auto mt-5 max-w-[560px] text-sm leading-7 text-[#667178]">Никаких решений вслепую: диагностика, понятный маршрут и лечение только после согласования.</p>
+            <span className="eyebrow">{t.processEye}</span>
+            <h2 className="section-title mt-5">{t.processTitle}</h2>
+            <p className="mx-auto mt-5 max-w-[560px] text-sm leading-7 text-[#667178]">{t.processText}</p>
           </div>
           <div className="relative grid gap-14 md:grid-cols-3 md:gap-5">
             <svg className={'process-line ' + (lineActive ? 'active' : '')} viewBox="0 0 800 30" preserveAspectRatio="none" aria-hidden="true">
@@ -285,14 +329,14 @@ export default function Home() {
               <path d="M0 15 C220 -8 580 38 800 15" fill="none" stroke="url(#processGradient)" strokeWidth="2" />
             </svg>
             {[
-              { n: '01', icon: CalendarCheck, title: 'Консультация', text: 'Расскажите, что беспокоит. Консультация по опубликованному прайсу стоит 2 000–5 000 ₸.' },
-              { n: '02', icon: ScanLine, title: '3D-диагностика', text: 'При необходимости делаем КТ, ОПТГ или прицельный снимок в Aqyl-SCAN по тому же адресу.' },
-              { n: '03', icon: ClipboardCheck, title: 'План и лечение', text: 'Врач объясняет варианты и приоритеты. Вы выбираете темп — команда отвечает за согласованность этапов.' },
+              { n: '01', icon: CalendarCheck, title: lang === 'kk' ? 'Кеңес' : 'Консультация', text: lang === 'kk' ? 'Не мазалайтынын айтыңыз. Алғашқы кеңестің бастапқы бағасы — 2 000–5 000 ₸.' : 'Расскажите, что беспокоит. Консультация по опубликованному прайсу стоит 2 000–5 000 ₸.' },
+              { n: '02', icon: ScanLine, title: '3D-диагностика', text: lang === 'kk' ? 'Қажет болса, осы мекенжайдағы Aqyl-SCAN-да КТ, ОПТГ немесе нысаналы сурет түсіреміз.' : 'При необходимости делаем КТ, ОПТГ или прицельный снимок в Aqyl-SCAN по тому же адресу.' },
+              { n: '03', icon: ClipboardCheck, title: lang === 'kk' ? 'Жоспар және ем' : 'План и лечение', text: lang === 'kk' ? 'Дәрігер нұсқалар мен басымдықтарды түсіндіреді. Ем тек сіздің келісіміңізбен басталады.' : 'Врач объясняет варианты и приоритеты. Вы выбираете темп — команда отвечает за согласованность этапов.' },
             ].map((step, index) => {
               const Icon = step.icon;
               return (
                 <article data-reveal key={step.n} className="step-card" style={{ transitionDelay: index * 150 + 'ms' }}>
-                  <div className="step-badge"><Icon size={29} /></div><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#3247C5]">Шаг {step.n}</div>
+                  <div className="step-badge"><Icon size={29} /></div><div className="text-[10px] font-extrabold uppercase tracking-[.18em] text-[#3247C5]">{t.step} {step.n}</div>
                   <h3 className="card-title mt-4">{step.title}</h3><p className="mx-auto mt-4 max-w-[310px] text-sm leading-7 text-[#667178]">{step.text}</p>
                 </article>
               );
@@ -304,38 +348,15 @@ export default function Home() {
       <section id="reviews" className="section-space bg-[#F1F3FA]">
         <div className="site-container">
           <div data-reveal className="mb-14 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <div><span className="eyebrow">Говорят пациенты</span><h2 className="section-title mt-5">Репутация, которую можно проверить</h2></div>
-            <a href="https://go.2gis.com/h3Mcu" target="_blank" rel="noreferrer" className="flex items-center gap-3 text-sm font-semibold text-[#455258]"><span className="flex text-[#F4A629]">{[0,1,2,3,4].map((star) => <Star key={star} size={16} fill="currentColor" />)}</span>4,9 · 241 отзыв в 2GIS <ArrowUpRight size={15} /></a>
+            <div><span className="eyebrow">{t.reviewsEye}</span><h2 className="section-title mt-5">{t.reviewsTitle}</h2></div>
+            <a href="https://go.2gis.com/h3Mcu" target="_blank" rel="noreferrer" className="flex items-center gap-3 text-sm font-semibold text-[#455258]"><span className="flex text-[#F4A629]">{[0,1,2,3,4].map((star) => <Star key={star} size={16} fill="currentColor" />)}</span>{t.reviewsLink} <ArrowUpRight size={15} /></a>
           </div>
           <div className="testimonials-scroll grid gap-5 md:grid-cols-2">
-            <article data-reveal className="testimonial featured md:col-span-2">
-              <Quote className="big-quote" size={92} fill="currentColor" />
-              <div className="flex text-[#FFE285]">{[0,1,2,3,4].map((star) => <Star key={star} size={17} fill="currentColor" />)}</div>
-              <blockquote className="display mt-7 max-w-[900px] text-[clamp(26px,4vw,42px)] font-medium leading-[1.08] tracking-[-.025em]">«Удаление сложного зуба мудрости прошло без боли. Всё зажило быстро, а ортопед довёл результат до идеала».</blockquote>
-              <div className="mt-8 flex flex-wrap items-center gap-4">
-                <span className="grid h-14 w-14 place-items-center rounded-full border-2 border-white bg-white/12 font-extrabold">ОО</span>
-                <div><div className="font-bold">Olga Olga</div><div className="mt-1 text-xs text-white/68">отзыв выбран клиникой · 2GIS</div></div>
-                <time className="ml-auto text-xs text-white/60">4 августа 2025</time>
-              </div>
-            </article>
-            <article data-reveal className="testimonial" style={{ transitionDelay: '80ms' }}>
-              <Quote className="big-quote" size={70} fill="currentColor" /><div className="flex text-[#F59E0B]">{[0,1,2,3,4].map((star) => <Star key={star} size={15} fill="currentColor" />)}</div>
-              <p className="mt-6 text-[17px] leading-8 text-[#3F4C51]">«Врач не назначает лишнего лечения, старается сохранить свои зубы и подробно объясняет каждый этап».</p>
-              <div className="mt-7 flex items-center gap-4">
-                <span className="grid h-14 w-14 place-items-center rounded-full border-2 border-[#3247C5] bg-[#EEF1FF] font-extrabold text-[#182B82]">ГА</span>
-                <div><div className="font-bold">Гульзира Акимбекова</div><div className="mt-1 text-xs text-[#788389]">отзыв пациента · 2GIS</div></div>
-                <time className="ml-auto text-[11px] text-[#9AA3A7]">16 августа 2026</time>
-              </div>
-            </article>
-            <article data-reveal className="testimonial" style={{ transitionDelay: '160ms' }}>
-              <Quote className="big-quote" size={70} fill="currentColor" /><div className="flex text-[#F59E0B]">{[0,1,2,3,4].map((star) => <Star key={star} size={15} fill="currentColor" />)}</div>
-              <p className="mt-6 text-[17px] leading-8 text-[#3F4C51]">«Исправили ошибки прежних клиник — всё прошло без боли и очень комфортно. Вы крутые».</p>
-              <div className="mt-7 flex items-center gap-4">
-                <span className="grid h-14 w-14 place-items-center rounded-full border-2 border-[#3247C5] bg-[#EEF1FF] font-extrabold text-[#182B82]">ДЕ</span>
-                <div><div className="font-bold">Дунай Еспаев</div><div className="mt-1 text-xs text-[#788389]">отзыв пациента · 2GIS</div></div>
-                <time className="ml-auto text-[11px] text-[#9AA3A7]">23 апреля 2026</time>
-              </div>
-            </article>
+            {reviews.slice(0, 3).map((review, index) => <article data-reveal key={review.id} className={'testimonial ' + (index === 0 ? 'featured md:col-span-2' : '')} style={{ transitionDelay: index * 80 + 'ms' }}>
+              <Quote className="big-quote" size={index === 0 ? 92 : 70} fill="currentColor" /><div className={'flex ' + (index === 0 ? 'text-[#FFE285]' : 'text-[#F59E0B]')}>{Array.from({ length: review.rating }, (_, star) => <Star key={star} size={index === 0 ? 17 : 15} fill="currentColor" />)}</div>
+              <blockquote className={index === 0 ? 'display mt-7 max-w-[900px] text-[clamp(26px,4vw,42px)] font-medium leading-[1.12]' : 'mt-6 text-[17px] leading-8 text-[#3F4C51]'}>«{lang === 'kk' ? review.body_kk : review.body_ru}»</blockquote>
+              <div className="mt-8 flex flex-wrap items-center gap-4"><span className={'grid h-14 w-14 place-items-center rounded-full border-2 font-extrabold ' + (index === 0 ? 'border-white bg-white/12' : 'border-[#3247C5] bg-[#EEF1FF] text-[#182B82]')}>{review.author.split(' ').map((part) => part[0]).join('').slice(0, 2)}</span><div><div className="font-bold">{review.author}</div><div className={index === 0 ? 'mt-1 text-xs text-white/68' : 'mt-1 text-xs text-[#788389]'}>{t.reviewSource}</div></div><time className={'ml-auto text-xs ' + (index === 0 ? 'text-white/60' : 'text-[#9AA3A7]')}>{new Intl.DateTimeFormat(lang === 'kk' ? 'kk-KZ' : 'ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(review.published_at))}</time></div>
+            </article>)}
           </div>
         </div>
       </section>
@@ -343,43 +364,27 @@ export default function Home() {
       <section id="prices" className="section-space">
         <div className="site-container">
           <div data-reveal className="mx-auto mb-16 max-w-[760px] text-center">
-            <span className="eyebrow">Открытый прайс</span><h2 className="section-title mt-5">Стоимость до визита, а не после</h2>
-            <p className="mx-auto mt-5 max-w-[600px] text-sm leading-7 text-[#667178]">Показываем опубликованные в 2GIS стартовые цены. Точную сумму врач называет после диагностики — она зависит от клинической ситуации.</p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3"><span className="rounded-full bg-[#EEF1FF] px-4 py-2 text-[10px] font-extrabold uppercase tracking-[.1em] text-[#263AAB]">Прайс обновлён 27 апреля 2026</span><span className="rounded-full border border-black/10 bg-white px-4 py-2 text-[10px] font-extrabold uppercase tracking-[.1em] text-[#5F687A]">Карта · наличные · QR</span></div>
+            <span className="eyebrow">{t.pricesEye}</span><h2 className="section-title mt-5">{t.pricesTitle}</h2>
+            <p className="mx-auto mt-5 max-w-[600px] text-sm leading-7 text-[#667178]">{t.pricesText}</p>
           </div>
-          <div className="grid gap-6 lg:grid-cols-3 lg:items-start">
-            <article data-reveal className="pricing-card">
-              <div className="flex items-start justify-between"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-[#EEF1FF] text-[#3247C5]"><ClipboardCheck size={23} /></span><span className="text-[10px] font-bold uppercase tracking-[.14em] text-[#899397]">Старт</span></div>
-              <h3 className="card-title mt-8">Консультация</h3><p className="mt-3 min-h-12 text-sm leading-6 text-[#69757A]">Первичная оценка ситуации и выбор нужного специалиста.</p>
-              <div className="mt-7 flex items-end gap-2"><span className="price">2–5 тыс.</span><span className="pb-2 text-xs text-[#7A858A]">₸</span></div>
-              <ul className="mt-8 space-y-4 text-sm">{['Осмотр врача','Разбор жалоб и целей','Рекомендации по диагностике','Предварительный маршрут','Ответы на вопросы'].map((item) => <li key={item} className="flex items-start gap-3"><Check size={17} className="mt-0.5 shrink-0 text-[#3247C5]" /> {item}</li>)}</ul>
-              <a href="https://wa.me/77001215454?text=Здравствуйте!%20Хочу%20записаться%20на%20консультацию" target="_blank" rel="noreferrer" className="ghost-btn mt-auto px-6 py-4 text-sm font-bold">Записаться</a>
-            </article>
-            <article data-reveal className="pricing-card popular" style={{ transitionDelay: '80ms' }}>
-              <span className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-[#182B82] to-[#5368FF] px-5 py-2 text-[10px] font-extrabold uppercase tracking-[.12em] text-white shadow-lg">Главное направление</span>
-              <div className="flex items-start justify-between"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-[#182B82] to-[#5368FF] text-white shadow-[0_10px_25px_rgba(37,99,235,.2)]"><Sparkles size={23} /></span><BadgeCheck className="text-[#3247C5]" size={24} /></div>
-              <h3 className="card-title mt-8">Восстановление</h3><p className="mt-3 min-h-12 text-sm leading-6 text-[#69757A]">Возвращаем жевательную функцию и уверенность в улыбке.</p>
-              <div className="mt-7 flex items-end gap-2"><span className="price gradient-text">от 35 тыс.</span><span className="pb-2 text-xs text-[#7A858A]">₸</span></div>
-              <ul className="mt-8 space-y-4 text-sm">{['Протезы — от 35 000 ₸','Импланты — от 90 000 ₸','Виниры — от 90 000 ₸','Стоматолог-ортопед','Имплантолог и хирург','Единый план этапов'].map((item) => <li key={item} className="flex items-start gap-3"><Check size={17} className="mt-0.5 shrink-0 text-[#3247C5]" /> {item}</li>)}</ul>
-              <a href="https://wa.me/77001215454?text=Здравствуйте!%20Хочу%20узнать%20о%20восстановлении%20зубов" target="_blank" rel="noreferrer" className="primary-btn mt-auto px-6 py-4 text-sm font-bold">Обсудить случай <ArrowUpRight size={17} /></a>
-            </article>
-            <article data-reveal className="pricing-card enterprise" style={{ transitionDelay: '160ms' }}>
-              <div className="flex items-start justify-between"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/10 text-[#A8B3FF]"><Stethoscope size={23} /></span><span className="text-[10px] font-bold uppercase tracking-[.14em] text-white/55">Лечение</span></div>
-              <h3 className="card-title mt-8">Сохранение зубов</h3><p className="mt-3 min-h-12 text-sm leading-6 text-white/60">Терапия и хирургия — по показаниям, без лишних назначений.</p>
-              <div className="mt-7 flex items-end gap-2"><span className="price">от 20 тыс.</span><span className="pb-2 text-xs text-white/50">₸</span></div>
-              <ul className="mt-8 space-y-4 text-sm text-white/82">{['Лечение — от 25 000 ₸','Сложное удаление — от 20 000 ₸','КТ, ОПТГ, снимки','Терапевт и хирург','Цифровая стоматология','Неотложка для взрослых'].map((item) => <li key={item} className="flex items-start gap-3"><Check size={17} className="mt-0.5 shrink-0 text-[#A8B3FF]" /> {item}</li>)}</ul>
-              <a href="tel:+77001215454" className="mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-4 text-sm font-bold text-[#111E61] transition-transform hover:-translate-y-1">Позвонить в клинику <Phone size={17} /></a>
-            </article>
+          <div className="price-live-grid">
+            {services.map((service, index) => <article data-reveal key={service.id} className={'pricing-card ' + (index === 1 ? 'popular' : index === 2 ? 'enterprise' : '')} style={{ transitionDelay: (index % 3) * 80 + 'ms' }}>
+              {index === 1 && <span className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-[#182B82] to-[#5368FF] px-5 py-2 text-[10px] font-extrabold uppercase tracking-[.12em] text-white shadow-lg">AKA-DENT</span>}
+              <div className="flex items-start justify-between"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-[#EEF1FF] text-[#3247C5]"><Check size={23} /></span><span className="text-[10px] font-bold uppercase tracking-[.14em] opacity-60">{service.slug}</span></div>
+              <h3 className="card-title mt-8">{lang === 'kk' ? service.title_kk : service.title_ru}</h3><p className="mt-3 min-h-12 text-sm leading-6 opacity-70">{lang === 'kk' ? service.description_kk : service.description_ru}</p>
+              <div className="mt-7 flex items-end gap-2"><span className="price">{t.from} {service.price_from.toLocaleString(lang === 'kk' ? 'kk-KZ' : 'ru-RU')}</span><span className="pb-2 text-xs opacity-60">₸</span></div>
+              <a href="#booking" className={index === 2 ? 'mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-4 text-sm font-bold text-[#111E61]' : 'primary-btn mt-auto px-6 py-4 text-sm font-bold'}>{t.book} <ArrowUpRight size={17} /></a>
+            </article>)}
           </div>
-          <p className="mt-9 text-center text-[11px] leading-5 text-[#8A9498]">Цены указаны «от» по данным 2GIS и не являются публичной офертой. Точная стоимость определяется после осмотра и диагностики.</p>
+          <p className="mt-9 text-center text-[11px] leading-5 text-[#8A9498]">{t.priceNote}</p>
         </div>
       </section>
 
       <section id="faq" className="section-space bg-white">
         <div className="site-container">
           <div data-reveal className="mb-14 grid gap-7 lg:grid-cols-[.75fr_1fr] lg:items-end">
-            <div><span className="eyebrow">Частые вопросы</span><h2 className="section-title mt-5">Честно о важном</h2></div>
-            <p className="max-w-[520px] text-sm leading-7 text-[#667178]">Если не нашли ответ — напишите куратору. Он подскажет без медицинского канцелярита и навязчивых звонков.</p>
+            <div><span className="eyebrow">{t.faqEye}</span><h2 className="section-title mt-5">{t.faqTitle}</h2></div>
+            <p className="max-w-[520px] text-sm leading-7 text-[#667178]">{t.faqText}</p>
           </div>
           <div className="grid items-start gap-4 lg:grid-cols-2">
             {faqs.map((faq, index) => {
@@ -401,25 +406,26 @@ export default function Home() {
         <div className="site-container">
           <div data-reveal className="cta-banner px-[clamp(22px,6vw,76px)] py-[clamp(58px,8vw,94px)] text-center">
             <div className="relative z-10 mx-auto max-w-[820px]">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-[10px] font-extrabold uppercase tracking-[.15em] text-white/86 backdrop-blur"><Sparkles size={13} /> Көмектесуге дайынбыз · Готовы помочь</span>
-              <h2 className="display mt-6 text-[clamp(34px,5vw,56px)] font-semibold leading-[.98] tracking-[-.04em]">Начните с разговора, а не с лечения</h2>
-              <p className="mx-auto mt-5 max-w-[610px] text-sm leading-7 text-white/76">Оставьте номер — откроется WhatsApp с готовым сообщением. Администратор поможет выбрать врача и удобное время.</p>
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-4 py-2 text-[10px] font-extrabold uppercase tracking-[.15em] text-white/86 backdrop-blur"><Sparkles size={13} /> {t.ctaBadge}</span>
+              <h2 className="display mt-6 text-[clamp(34px,5vw,56px)] font-semibold leading-[.98] tracking-[-.04em]">{t.ctaTitle}</h2>
+              <p className="mx-auto mt-5 max-w-[610px] text-sm leading-7 text-white/76">{t.ctaText}</p>
               {submitted ? (
-                <div className="mx-auto mt-8 max-w-[570px] rounded-full border border-white/25 bg-white/15 px-6 py-5 text-sm font-bold backdrop-blur">WhatsApp открыт — осталось отправить сообщение.</div>
+                <div className="mx-auto mt-8 max-w-[670px] rounded-full border border-white/25 bg-white/15 px-6 py-5 text-sm font-bold backdrop-blur">{t.sent}</div>
               ) : (
-                <form className="email-pill" onSubmit={handleSubmit}>
-                  <label htmlFor="booking-phone" className="sr-only">Ваш номер телефона</label>
-                  <input id="booking-phone" type="tel" value={contact} onChange={(event) => setContact(event.target.value)} placeholder="+7 ___ ___ __ __" autoComplete="tel" required />
-                  <button type="submit" disabled={submitting}>{submitting ? <span className="inline-flex items-center gap-2"><Loader2 size={17} className="spinner" /> Открываем</span> : 'Написать в WhatsApp'}</button>
+                <form className="booking-pill" onSubmit={handleSubmit}>
+                  <label htmlFor="booking-name" className="sr-only">{t.name}</label><input id="booking-name" type="text" value={booking.name} onChange={(event) => setBooking((current) => ({ ...current, name: event.target.value }))} placeholder={t.name} autoComplete="name" required />
+                  <label htmlFor="booking-phone" className="sr-only">{t.phone}</label><input id="booking-phone" type="tel" value={booking.phone} onChange={(event) => setBooking((current) => ({ ...current, phone: event.target.value }))} placeholder={t.phone} autoComplete="tel" required />
+                  <input className="form-honeypot" tabIndex={-1} aria-hidden="true" value={booking.website} onChange={(event) => setBooking((current) => ({ ...current, website: event.target.value }))} autoComplete="off" />
+                  <button type="submit" disabled={submitting}>{submitting ? <span className="inline-flex items-center gap-2"><Loader2 size={17} className="spinner" /> {t.sending}</span> : t.send}</button>
                 </form>
               )}
-              <p className="mt-4 text-[10px] text-white/62">Без рассылок. Номер используется только для сообщения, которое отправляете вы.</p>
+              <p className="mt-4 text-[10px] text-white/62">{t.privacy}</p>
             </div>
           </div>
           <div data-reveal className="mt-5 grid gap-5 md:grid-cols-3">
-            <a href="https://go.2gis.com/h3Mcu" target="_blank" rel="noreferrer" className="contact-card group"><span className="contact-icon"><MapPin size={21} /></span><div><span className="text-[10px] font-extrabold uppercase tracking-[.14em] text-[#7A849B]">Адрес</span><strong className="mt-2 block text-base text-[#111E61]">Комиссарова, 28</strong><span className="mt-1 block text-xs text-[#6B7489]">Новый город · Караганда</span></div><ArrowUpRight className="ml-auto text-[#3247C5] transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" size={18} /></a>
-            <a href="tel:+77001215454" className="contact-card group"><span className="contact-icon"><Phone size={21} /></span><div><span className="text-[10px] font-extrabold uppercase tracking-[.14em] text-[#7A849B]">Запись</span><strong className="mt-2 block text-base text-[#111E61]">+7 700 121-54-54</strong><span className="mt-1 block text-xs text-[#6B7489]">Звонок или WhatsApp</span></div><ArrowUpRight className="ml-auto text-[#3247C5] transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" size={18} /></a>
-            <div className="contact-card"><span className="contact-icon"><Clock size={21} /></span><div><span className="text-[10px] font-extrabold uppercase tracking-[.14em] text-[#7A849B]">График</span><strong className="mt-2 block text-base text-[#111E61]">Пн–Пт · 09:00–19:00</strong><span className="mt-1 block text-xs text-[#6B7489]">Сб 09:00–15:00 · Вс выходной</span></div></div>
+            <a href="https://go.2gis.com/h3Mcu" target="_blank" rel="noreferrer" className="contact-card group"><span className="contact-icon"><MapPin size={21} /></span><div><span className="text-[10px] font-extrabold uppercase tracking-[.14em] text-[#7A849B]">{t.address}</span><strong className="mt-2 block text-base text-[#111E61]">Комиссарова, 28</strong><span className="mt-1 block text-xs text-[#6B7489]">{t.city}</span></div><ArrowUpRight className="ml-auto text-[#3247C5] transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" size={18} /></a>
+            <a href="tel:+77001215454" className="contact-card group"><span className="contact-icon"><Phone size={21} /></span><div><span className="text-[10px] font-extrabold uppercase tracking-[.14em] text-[#7A849B]">{t.booking}</span><strong className="mt-2 block text-base text-[#111E61]">+7 700 121-54-54</strong><span className="mt-1 block text-xs text-[#6B7489]">{t.callWa}</span></div><ArrowUpRight className="ml-auto text-[#3247C5] transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" size={18} /></a>
+            <div className="contact-card"><span className="contact-icon"><Clock size={21} /></span><div><span className="text-[10px] font-extrabold uppercase tracking-[.14em] text-[#7A849B]">{t.hours}</span><strong className="mt-2 block text-base text-[#111E61]">{t.schedule}</strong><span className="mt-1 block text-xs text-[#6B7489]">{t.weekend}</span></div></div>
           </div>
         </div>
       </section>
@@ -429,13 +435,13 @@ export default function Home() {
           <div className="grid gap-12 pb-16 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <a href="#top" className="flex items-center gap-3" aria-label="AKA-DENT — на главную"><span className="brand-mark"><span /><span /><span /></span><span><span className="block text-[17px] font-extrabold tracking-[.18em] text-[#111E61]">AKA-DENT</span><span className="block text-[7px] font-bold uppercase tracking-[.28em] text-[#7580A8]">стоматология</span></span></a>
-              <p className="mt-5 max-w-[250px] text-sm leading-7 text-[#68747A]">Стоматология полного цикла в Караганде. Лечим так, чтобы не переделывать.</p>
+              <p className="mt-5 max-w-[250px] text-sm leading-7 text-[#68747A]">{t.footerText}</p>
               <div className="mt-6 flex gap-2"><a href="https://instagram.com/akadent_stom" target="_blank" rel="noreferrer" className="social-btn" aria-label="AKA-DENT в Instagram"><Camera size={17} /></a><a href="https://go.2gis.com/h3Mcu" target="_blank" rel="noreferrer" className="social-btn" aria-label="AKA-DENT в 2GIS"><MapPin size={17} /></a><a href="https://wa.me/77001215454" target="_blank" rel="noreferrer" className="social-btn" aria-label="Написать AKA-DENT в WhatsApp"><MessageCircle size={17} /></a></div>
             </div>
-            <div><h3 className="text-[11px] font-extrabold uppercase tracking-[.14em]">Услуги</h3><div className="mt-6 flex flex-col gap-4"><a className="footer-link" href="#services">Лечение</a><a className="footer-link" href="#services">Имплантация</a><a className="footer-link" href="#services">Протезирование</a><a className="footer-link" href="#services">3D-диагностика</a></div></div>
-            <div><h3 className="text-[11px] font-extrabold uppercase tracking-[.14em]">О клинике</h3><div className="mt-6 flex flex-col gap-4"><a className="footer-link" href="#reviews">Отзывы</a><a className="footer-link" href="#process">Как проходит приём</a><a className="footer-link" href="#doctors">Врачи</a><a className="footer-link" href="#prices">Цены</a></div></div>
+            <div><h3 className="text-[11px] font-extrabold uppercase tracking-[.14em]">{t.nav[0]}</h3><div className="mt-6 flex flex-col gap-4">{services.slice(0,4).map((service) => <a key={service.id} className="footer-link" href="#services">{lang === 'kk' ? service.title_kk : service.title_ru}</a>)}</div></div>
+            <div><h3 className="text-[11px] font-extrabold uppercase tracking-[.14em]">{t.clinic}</h3><div className="mt-6 flex flex-col gap-4"><a className="footer-link" href="#reviews">{t.nav[2]}</a><a className="footer-link" href="#process">{t.nav[1]}</a><a className="footer-link" href="#doctors">{t.meet}</a><a className="footer-link" href="#prices">{t.nav[3]}</a></div></div>
             <div>
-              <h3 className="text-[11px] font-extrabold uppercase tracking-[.14em]">Поддержка</h3>
+              <h3 className="text-[11px] font-extrabold uppercase tracking-[.14em]">{t.support}</h3>
               <div className="mt-6 flex flex-col gap-4 text-sm text-[#647077]">
                 <a href="tel:+77001215454" className="footer-link flex items-center gap-3"><Phone size={16} className="text-[#3247C5]" /> +7 700 121-54-54</a>
                 <a href="https://wa.me/77001215454" target="_blank" rel="noreferrer" className="footer-link flex items-center gap-3"><MessageCircle size={16} className="text-[#3247C5]" /> WhatsApp</a>
@@ -445,8 +451,8 @@ export default function Home() {
             </div>
           </div>
           <div className="flex flex-col gap-4 border-t border-black/[.07] py-7 text-[11px] text-[#8A9498] sm:flex-row sm:items-center sm:justify-between">
-            <span>© 2026 Стоматологический центр AKA-DENT. Караганда.</span>
-            <div className="flex flex-wrap gap-5"><span>Информация на сайте не заменяет консультацию врача</span><a href="#faq" className="hover:text-[#3247C5]">Вопросы и ответы</a></div>
+            <span>© 2026 AKA-DENT · Қарағанды / Караганда</span>
+            <div className="flex flex-wrap gap-5"><span>{t.disclaimer}</span><a href="/admin" className="hover:text-[#3247C5]">{t.admin}</a></div>
           </div>
         </div>
       </footer>

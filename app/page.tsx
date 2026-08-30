@@ -32,7 +32,7 @@ const copy = {
     faqEye: 'Частые вопросы', faqTitle: 'Честно о важном', faqText: 'Если не нашли ответ — напишите администратору. Поможем выбрать врача и удобное время.',
     ctaBadge: 'Готовы помочь', ctaTitle: 'Начните с разговора, а не с лечения', ctaText: 'Оставьте имя и номер. Заявка сохранится в панели клиники, затем откроется WhatsApp с готовым сообщением.', name: 'Ваше имя', phone: '+7 ___ ___ __ __', send: 'Записаться', sending: 'Сохраняем', sent: 'Заявка сохранена. WhatsApp открыт — осталось отправить сообщение.', privacy: 'Без рассылок. Контакты используются только для связи по вашей записи.',
     address: 'Адрес', booking: 'Запись', hours: 'График', city: 'Новый город · Караганда', callWa: 'Звонок или WhatsApp', weekend: 'Сб 09:00–15:00 · Вс выходной',
-    footerText: 'Стоматология полного цикла в Караганде. Лечим так, чтобы не переделывать.', clinic: 'О клинике', support: 'Поддержка', admin: 'Панель управления', disclaimer: 'Информация на сайте не заменяет консультацию врача',
+    footerText: 'Стоматология полного цикла в Караганде. Лечим так, чтобы не переделывать.', clinic: 'О клинике', support: 'Поддержка', admin: 'Панель управления', disclaimer: 'Информация на сайте не заменяет консультацию врача', showAll: 'Показать все', showLess: 'Свернуть', mobileCall: 'Позвонить',
   },
   kk: {
     nav: ['Қызметтер', 'Қалай емдейміз', 'Пікірлер', 'Бағалар', 'Сұрақтар'], menu: 'Мәзір', book: 'Жазылу',
@@ -49,7 +49,7 @@ const copy = {
     faqEye: 'Жиі сұрақтар', faqTitle: 'Маңыздысы туралы ашық', faqText: 'Жауап табылмаса, әкімшіге жазыңыз. Дәрігер мен ыңғайлы уақытты таңдауға көмектесеміз.',
     ctaBadge: 'Көмектесуге дайынбыз', ctaTitle: 'Емнен емес, әңгімеден бастаңыз', ctaText: 'Атыңыз бен нөміріңізді қалдырыңыз. Өтінім клиника панеліне сақталып, WhatsApp-та дайын хабарлама ашылады.', name: 'Атыңыз', phone: '+7 ___ ___ __ __', send: 'Жазылу', sending: 'Сақталуда', sent: 'Өтінім сақталды. WhatsApp ашылды — хабарламаны жіберу ғана қалды.', privacy: 'Жарнама жібермейміз. Байланыс деректері тек жазылу үшін қолданылады.',
     address: 'Мекенжай', booking: 'Жазылу', hours: 'Жұмыс уақыты', city: 'Жаңа қала · Қарағанды', callWa: 'Қоңырау немесе WhatsApp', weekend: 'Сб 09:00–15:00 · Жс демалыс',
-    footerText: 'Қарағандыдағы толық циклді стоматология. Қайта жасатпау үшін сапалы емдейміз.', clinic: 'Клиника туралы', support: 'Қолдау', admin: 'Басқару панелі', disclaimer: 'Сайттағы ақпарат дәрігер кеңесін алмастырмайды',
+    footerText: 'Қарағандыдағы толық циклді стоматология. Қайта жасатпау үшін сапалы емдейміз.', clinic: 'Клиника туралы', support: 'Қолдау', admin: 'Басқару панелі', disclaimer: 'Сайттағы ақпарат дәрігер кеңесін алмастырмайды', showAll: 'Барлығын көру', showLess: 'Жинау', mobileCall: 'Қоңырау',
   },
 } as const;
 const avatars = [
@@ -93,6 +93,8 @@ export default function Home() {
   const [lineActive, setLineActive] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [servicesExpanded, setServicesExpanded] = useState(false);
+  const [pricesExpanded, setPricesExpanded] = useState(false);
   const [booking, setBooking] = useState({ name: '', phone: '', website: '' });
   const heroImageRef = useRef<HTMLImageElement>(null);
   const statsRef = useRef<HTMLElement>(null);
@@ -251,12 +253,12 @@ export default function Home() {
               <span className="hero-enter block" style={{ animationDelay: '100ms', animationDuration: '800ms' }}>{t.hero1}</span>
               <span className="hero-enter block" style={{ animationDelay: '200ms', animationDuration: '800ms' }}>{t.hero2} <span key={lang + wordIndex} className="typed-word gradient-text italic">{typedWords[wordIndex]}</span></span>
             </h1>
-            <p className="hero-enter mt-8 max-w-[620px] text-[clamp(17px,2vw,21px)] leading-[1.65] text-[#46506D]" style={{ animationDelay: '350ms', animationDuration: '700ms' }}>{t.heroText}</p>
+            <p className="hero-subtitle hero-enter mt-8 max-w-[620px] text-[clamp(17px,2vw,21px)] leading-[1.65] text-[#46506D]" style={{ animationDelay: '350ms', animationDuration: '700ms' }}>{t.heroText}</p>
             <div className="hero-actions hero-enter mt-9 flex flex-wrap gap-3" style={{ animationDelay: '500ms', animationDuration: '600ms' }}>
               <a href="#booking" className="primary-btn px-7 py-4 text-[13px] font-bold">{t.whatsapp} <ArrowUpRight size={18} /></a>
               <a href="#doctors" className="ghost-btn px-7 py-4 text-[13px] font-bold"><Play size={16} fill="currentColor" /> {t.meet}</a>
             </div>
-            <div className="hero-enter mt-9 flex flex-wrap items-center gap-4" style={{ animationDelay: '650ms', animationDuration: '600ms' }}>
+            <div className="hero-social hero-enter mt-9 flex flex-wrap items-center gap-4" style={{ animationDelay: '650ms', animationDuration: '600ms' }}>
               <div className="avatar-stack flex">{avatars.slice(0, 4).map((src, index) => <img key={src} src={src} alt={'Пациент AKA-DENT ' + (index + 1)} loading="lazy" decoding="async" />)}</div>
               <div><div className="flex items-center gap-1 text-[#F4A629]" aria-label="4,9 / 5">{[0,1,2,3,4].map((star) => <Star key={star} size={14} fill="currentColor" />)}<span className="ml-1 text-xs font-extrabold text-[#111E61]">4,9</span></div><p className="mt-1 text-xs font-semibold text-[#4A556D]"><strong className="text-[#0F0F0F]">{t.ratings}</strong></p></div>
             </div>
@@ -279,7 +281,7 @@ export default function Home() {
             <div><span className="eyebrow">{t.servicesEye}</span><h2 className="section-title mt-5 max-w-[760px]">{t.servicesTitle}</h2></div>
             <p className="max-w-[470px] text-[15px] leading-7 text-[#667178] lg:justify-self-end">{t.servicesText}</p>
           </div>
-          <div className="services-live-grid">
+          <div className={'services-live-grid ' + (servicesExpanded ? 'is-expanded' : '')}>
             {services.map((service, index) => {
               const Icon = [ScanLine, Microscope, Heart, Smile, ShieldCheck, Stethoscope][index % 6];
               return <article data-reveal key={service.id} className={'feature-card ' + (index === 0 || index === 5 ? 'large' : '')} style={{ transitionDelay: index * 80 + 'ms' }}>
@@ -290,6 +292,7 @@ export default function Home() {
               </article>;
             })}
           </div>
+          <button type="button" className="mobile-expand" onClick={() => setServicesExpanded((current) => !current)} aria-expanded={servicesExpanded}>{servicesExpanded ? t.showLess : t.showAll}<ChevronDown size={17} /></button>
           <div id="doctors" data-reveal className="mt-20">
             <span className="eyebrow">{t.teamEye}</span><h2 className="section-title mt-5 max-w-[900px]">{t.teamTitle}</h2><p className="mt-5 max-w-[680px] text-sm leading-7 text-[#667178]">{t.teamText}</p>
             <div className="doctor-profile-grid mt-10">
@@ -367,7 +370,7 @@ export default function Home() {
             <span className="eyebrow">{t.pricesEye}</span><h2 className="section-title mt-5">{t.pricesTitle}</h2>
             <p className="mx-auto mt-5 max-w-[600px] text-sm leading-7 text-[#667178]">{t.pricesText}</p>
           </div>
-          <div className="price-live-grid">
+          <div className={'price-live-grid ' + (pricesExpanded ? 'is-expanded' : '')}>
             {services.map((service, index) => <article data-reveal key={service.id} className={'pricing-card ' + (index === 1 ? 'popular' : index === 2 ? 'enterprise' : '')} style={{ transitionDelay: (index % 3) * 80 + 'ms' }}>
               {index === 1 && <span className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-[#182B82] to-[#5368FF] px-5 py-2 text-[10px] font-extrabold uppercase tracking-[.12em] text-white shadow-lg">AKA-DENT</span>}
               <div className="flex items-start justify-between"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-[#EEF1FF] text-[#3247C5]"><Check size={23} /></span><span className="text-[10px] font-bold uppercase tracking-[.14em] opacity-60">{service.slug}</span></div>
@@ -376,6 +379,7 @@ export default function Home() {
               <a href="#booking" className={index === 2 ? 'mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-4 text-sm font-bold text-[#111E61]' : 'primary-btn mt-auto px-6 py-4 text-sm font-bold'}>{t.book} <ArrowUpRight size={17} /></a>
             </article>)}
           </div>
+          <button type="button" className="mobile-expand" onClick={() => setPricesExpanded((current) => !current)} aria-expanded={pricesExpanded}>{pricesExpanded ? t.showLess : t.showAll}<ChevronDown size={17} /></button>
           <p className="mt-9 text-center text-[11px] leading-5 text-[#8A9498]">{t.priceNote}</p>
         </div>
       </section>
@@ -456,6 +460,10 @@ export default function Home() {
           </div>
         </div>
       </footer>
+      <nav className="mobile-booking-dock" aria-label={lang === 'kk' ? 'Жылдам жазылу' : 'Быстрая запись'}>
+        <a href="tel:+77001215454" aria-label={t.mobileCall}><Phone size={19} /><span>{t.mobileCall}</span></a>
+        <a href="#booking" className="mobile-booking-main"><MessageCircle size={19} /><span>{t.book}</span></a>
+      </nav>
     </main>
   );
 }

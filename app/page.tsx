@@ -449,6 +449,7 @@ export default function Home() {
               <div className="mt-6 flex flex-col gap-4 text-sm text-[#647077]">
                 <a href="tel:+77001215454" className="footer-link flex items-center gap-3"><Phone size={16} className="text-[#3247C5]" /> +7 700 121-54-54</a>
                 <a href="https://wa.me/77001215454" target="_blank" rel="noreferrer" className="footer-link flex items-center gap-3"><MessageCircle size={16} className="text-[#3247C5]" /> WhatsApp</a>
+                <a href="/admin" className="footer-link flex items-center gap-3"><ShieldCheck size={16} className="text-[#3247C5]" /> {t.admin}</a>
                 <span className="flex items-start gap-3 leading-6"><MapPin size={16} className="mt-1 shrink-0 text-[#3247C5]" /> Караганда, ул. Комиссарова, 28</span>
                 <span className="flex items-center gap-3"><Clock size={16} className="text-[#3247C5]" /> Пн–Пт 09:00–19:00</span>
               </div>

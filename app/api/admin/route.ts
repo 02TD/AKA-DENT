@@ -54,11 +54,11 @@ export async function POST(request: Request) {
       const slug = clean(body.slug, 80);
       await db.prepare(`UPDATE doctors SET
         name_ru = ?, name_kk = ?, role_ru = ?, role_kk = ?, bio_ru = ?, bio_kk = ?,
-        focus_ru = ?, focus_kk = ?, image_url = ?, active = ?, updated_at = datetime('now')
+        focus_ru = ?, focus_kk = ?, active = ?, updated_at = datetime('now')
         WHERE slug = ?`).bind(
         clean(body.name_ru, 120), clean(body.name_kk, 120), clean(body.role_ru, 180), clean(body.role_kk, 180),
         clean(body.bio_ru), clean(body.bio_kk), clean(body.focus_ru, 240), clean(body.focus_kk, 240),
-        clean(body.image_url, 400), body.active === false ? 0 : 1, slug,
+        body.active === false ? 0 : 1, slug,
       ).run();
     } else if (action === 'upsert_review') {
       const id = clean(body.id, 100) || crypto.randomUUID();

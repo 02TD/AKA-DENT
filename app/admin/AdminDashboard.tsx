@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import { appointmentServiceName, buildAppointmentInbox, type Appointment } from '@/lib/appointments';
+import DoctorPhotoUploader from './DoctorPhotoUploader';
 
 type Service = { id: string; slug: string; title_ru: string; title_kk: string; description_ru: string; description_kk: string; price_from: number | null; price_to: number | null; active: number };
 type Doctor = { slug: string; name_ru: string; name_kk: string; role_ru: string; role_kk: string; bio_ru: string; bio_kk: string; focus_ru: string; focus_kk: string; image_url: string; active: number };
@@ -43,6 +44,7 @@ export default function AdminDashboard({ user }: { user: { email: string; name: 
   const [saving, setSaving] = useState('');
   const [notice, setNotice] = useState('');
   const [loadError, setLoadError] = useState('');
+  const [uploadingDoctor, setUploadingDoctor] = useState('');
   const [reviewDraft, setReviewDraft] = useState({ author: '', rating: 5, body_ru: '', body_kk: '', source_url: 'https://go.2gis.com/h3Mcu', published_at: new Date().toISOString().slice(0, 10) });
 
   const loadData = useCallback(async () => {
@@ -102,12 +104,12 @@ export default function AdminDashboard({ user }: { user: { email: string; name: 
 
       <Tabs defaultValue="appointments" className="admin-tabs">
         <TabsList className="admin-tabs-list">
-          <TabsTrigger value="appointments"><CalendarDays /> Заявки с сайта <Badge>{inbox.siteAppointments.length}</Badge></TabsTrigger>
-          <TabsTrigger value="doctor-appointments"><Stethoscope /> Записи к врачам <Badge>{inbox.doctorAppointments.length}</Badge></TabsTrigger>
-          <TabsTrigger value="prices"><CircleDollarSign /> Цены</TabsTrigger>
-          <TabsTrigger value="doctors"><Stethoscope /> Врачи</TabsTrigger>
-          <TabsTrigger value="reviews"><MessageSquareText /> Отзывы</TabsTrigger>
-          <TabsTrigger value="content"><RefreshCw /> Контент</TabsTrigger>
+          <TabsTrigger value="appointments" disabled={Boolean(uploadingDoctor)}><CalendarDays /> Заявки с сайта <Badge>{inbox.siteAppointments.length}</Badge></TabsTrigger>
+          <TabsTrigger value="doctor-appointments" disabled={Boolean(uploadingDoctor)}><Stethoscope /> Записи к врачам <Badge>{inbox.doctorAppointments.length}</Badge></TabsTrigger>
+          <TabsTrigger value="prices" disabled={Boolean(uploadingDoctor)}><CircleDollarSign /> Цены</TabsTrigger>
+          <TabsTrigger value="doctors" disabled={Boolean(uploadingDoctor)}><Stethoscope /> Врачи</TabsTrigger>
+          <TabsTrigger value="reviews" disabled={Boolean(uploadingDoctor)}><MessageSquareText /> Отзывы</TabsTrigger>
+          <TabsTrigger value="content" disabled={Boolean(uploadingDoctor)}><RefreshCw /> Контент</TabsTrigger>
         </TabsList>
 
         <TabsContent value="appointments" className="admin-panel">
@@ -132,7 +134,16 @@ export default function AdminDashboard({ user }: { user: { email: string; name: 
 
         <TabsContent value="doctors" className="admin-panel">
           <div className="admin-panel-head"><div><span>Команда</span><h2>Профили врачей</h2><p>Каждый профиль имеет свою публичную страницу на русском и казахском.</p></div></div>
-          <div className="admin-doctor-list">{data.doctors.map((doctor) => <article className="admin-doctor-card" key={doctor.slug}><img src={doctor.image_url} alt={doctor.name_ru} /><div className="admin-doctor-form"><div className="admin-card-title"><div><strong>{doctor.name_ru}</strong><small>/doctors/{doctor.slug}</small></div><a href={'/doctors/' + doctor.slug} target="_blank" rel="noreferrer" aria-label="Открыть страницу врача"><ArrowUpRight /></a></div><div className="admin-fields two"><label>Имя RU<Input value={doctor.name_ru} onChange={(event) => patchDoctor(doctor.slug, { name_ru: event.target.value })} /></label><label>Аты KZ<Input value={doctor.name_kk} onChange={(event) => patchDoctor(doctor.slug, { name_kk: event.target.value })} /></label><label>Специализация RU<Input value={doctor.role_ru} onChange={(event) => patchDoctor(doctor.slug, { role_ru: event.target.value })} /></label><label>Мамандану KZ<Input value={doctor.role_kk} onChange={(event) => patchDoctor(doctor.slug, { role_kk: event.target.value })} /></label><label>Фокус RU<Input value={doctor.focus_ru} onChange={(event) => patchDoctor(doctor.slug, { focus_ru: event.target.value })} /></label><label>Фокус KZ<Input value={doctor.focus_kk} onChange={(event) => patchDoctor(doctor.slug, { focus_kk: event.target.value })} /></label></div><div className="admin-fields two"><label>О враче RU<Textarea value={doctor.bio_ru} onChange={(event) => patchDoctor(doctor.slug, { bio_ru: event.target.value })} /></label><label>Дәрігер туралы KZ<Textarea value={doctor.bio_kk} onChange={(event) => patchDoctor(doctor.slug, { bio_kk: event.target.value })} /></label></div><label className="admin-field-full">Путь или URL фотографии<Input value={doctor.image_url} onChange={(event) => patchDoctor(doctor.slug, { image_url: event.target.value })} /></label><Button className="admin-save" disabled={saving === 'doctor-' + doctor.slug} onClick={() => void saveAction('doctor-' + doctor.slug, { action: 'update_doctor', ...doctor, active: Boolean(doctor.active) })}>{saving === 'doctor-' + doctor.slug ? <Loader2 className="spinner" /> : <Save />} Сохранить профиль</Button></div></article>)}</div>
+          <div className="admin-doctor-list">{data.doctors.map((doctor) => <article className="admin-doctor-card" key={doctor.slug}>
+            <img src={doctor.image_url} alt={doctor.name_ru} loading="lazy" decoding="async" />
+            <div className="admin-doctor-form">
+              <div className="admin-card-title"><div><strong>{doctor.name_ru}</strong><small>/doctors/{doctor.slug}</small></div><a href={'/doctors/' + doctor.slug} target="_blank" rel="noreferrer" aria-label="Открыть страницу врача"><ArrowUpRight /></a></div>
+              <DoctorPhotoUploader slug={doctor.slug} name={doctor.name_ru} disabled={Boolean(saving) || Boolean(uploadingDoctor)} onUploaded={(imageUrl) => patchDoctor(doctor.slug, { image_url: imageUrl })} onBusyChange={(busy) => setUploadingDoctor(busy ? doctor.slug : '')} />
+              <div className="admin-fields two"><label>Имя RU<Input value={doctor.name_ru} onChange={(event) => patchDoctor(doctor.slug, { name_ru: event.target.value })} /></label><label>Аты KZ<Input value={doctor.name_kk} onChange={(event) => patchDoctor(doctor.slug, { name_kk: event.target.value })} /></label><label>Специализация RU<Input value={doctor.role_ru} onChange={(event) => patchDoctor(doctor.slug, { role_ru: event.target.value })} /></label><label>Мамандану KZ<Input value={doctor.role_kk} onChange={(event) => patchDoctor(doctor.slug, { role_kk: event.target.value })} /></label><label>Фокус RU<Input value={doctor.focus_ru} onChange={(event) => patchDoctor(doctor.slug, { focus_ru: event.target.value })} /></label><label>Фокус KZ<Input value={doctor.focus_kk} onChange={(event) => patchDoctor(doctor.slug, { focus_kk: event.target.value })} /></label></div>
+              <div className="admin-fields two"><label>О враче RU<Textarea value={doctor.bio_ru} onChange={(event) => patchDoctor(doctor.slug, { bio_ru: event.target.value })} /></label><label>Дәрігер туралы KZ<Textarea value={doctor.bio_kk} onChange={(event) => patchDoctor(doctor.slug, { bio_kk: event.target.value })} /></label></div>
+              <Button className="admin-save" disabled={saving === 'doctor-' + doctor.slug || Boolean(uploadingDoctor)} onClick={() => void saveAction('doctor-' + doctor.slug, { action: 'update_doctor', ...doctor, active: Boolean(doctor.active) })}>{saving === 'doctor-' + doctor.slug ? <Loader2 className="spinner" /> : <Save />} Сохранить профиль</Button>
+            </div>
+          </article>)}</div>
         </TabsContent>
 
         <TabsContent value="reviews" className="admin-panel">

@@ -1,7 +1,7 @@
 import { env } from 'cloudflare:workers';
 import { doctorsSeed, reviewsSeed, schemaStatements, servicesSeed, settingsSeed } from '@/db/schema';
 
-type RuntimeEnv = { DB: D1Database; ADMIN_EMAIL?: string };
+type RuntimeEnv = { DB: D1Database; PHOTOS?: R2Bucket; ADMIN_EMAIL?: string };
 
 let schemaReady = false;
 

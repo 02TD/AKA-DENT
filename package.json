@@ -9,6 +9,7 @@
     "dev": "vinext dev",
     "build": "vinext build",
     "test:appointments": "node --experimental-strip-types --test tests/appointments.test.mjs",
+    "test:photos": "node --experimental-strip-types --test tests/photo-upload.test.mjs",
     "start": "wrangler dev --config dist/server/wrangler.json",
     "lint": "oxlint",
     "format": "oxfmt"

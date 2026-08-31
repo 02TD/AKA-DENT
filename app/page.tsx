@@ -218,16 +218,16 @@ export default function Home() {
           <nav className="hidden items-center gap-8 text-[13px] font-semibold lg:flex" aria-label={lang === 'kk' ? 'Негізгі навигация' : 'Основная навигация'}>
             {t.nav.map((label, index) => <a key={label} className="nav-link" href={['#services','#process','#reviews','#prices','#faq'][index]}>{label}</a>)}
           </nav>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             <div className="lang-switch" aria-label="Тіл / Язык"><button type="button" className={lang === 'ru' ? 'active' : ''} onClick={() => changeLanguage('ru')}>RU</button><button type="button" className={lang === 'kk' ? 'active' : ''} onClick={() => changeLanguage('kk')}>KZ</button></div>
             <a href="tel:+77001215454" className="hidden text-right md:block"><span className="block text-[10px] font-bold uppercase tracking-[.13em] text-[#7380A6]">{t.schedule}</span><span className="mt-1 block text-sm font-extrabold text-[#111E61]">+7 700 121-54-54</span></a>
-            <a href="#booking" className="primary-btn hidden px-5 py-3 text-[12px] font-bold sm:inline-flex">{t.book} <ArrowUpRight size={15} aria-hidden="true" /></a>
-            <button type="button" onClick={() => setMenuOpen(true)} className="grid h-11 w-11 place-items-center rounded-full border border-black/10 bg-white/60 lg:hidden" aria-label={t.menu} aria-expanded={menuOpen}><Menu size={19} /></button>
+            <a href="#booking" className="nav-booking-cta primary-btn px-5 py-3 text-[12px] font-bold">{t.book} <ArrowUpRight size={15} aria-hidden="true" /></a>
+            <button type="button" onClick={() => setMenuOpen((current) => !current)} className="nav-menu-toggle relative z-20 grid h-11 w-11 shrink-0 place-items-center rounded-full border border-black/10 bg-white/80" aria-label={menuOpen ? (lang === 'kk' ? 'Мәзірді жабу' : 'Закрыть меню') : t.menu} aria-controls="mobile-navigation" aria-expanded={menuOpen}>{menuOpen ? <X size={19} /> : <Menu size={19} />}</button>
           </div>
         </div>
       </header>
 
-      <div className={'mobile-layer ' + (menuOpen ? 'open' : '')} onClick={() => setMenuOpen(false)} aria-hidden={!menuOpen}>
+      <div id="mobile-navigation" className={'mobile-layer ' + (menuOpen ? 'open' : '')} onClick={() => setMenuOpen(false)} aria-hidden={!menuOpen}>
         <div className="mobile-drawer" onClick={(event) => event.stopPropagation()}>
           <button type="button" className="absolute right-5 top-5 grid h-11 w-11 place-items-center rounded-full border border-black/10" onClick={() => setMenuOpen(false)} aria-label="Закрыть меню"><X size={19} /></button>
           <div className="display mb-9 text-4xl font-semibold">{t.menu}</div>
@@ -251,7 +251,7 @@ export default function Home() {
             </div>
             <h1 className="hero-title">
               <span className="hero-enter block" style={{ animationDelay: '100ms', animationDuration: '800ms' }}>{t.hero1}</span>
-              <span className="hero-enter block" style={{ animationDelay: '200ms', animationDuration: '800ms' }}>{t.hero2} <span key={lang + wordIndex} className="typed-word gradient-text italic">{typedWords[wordIndex]}</span></span>
+              <span className="hero-enter block" style={{ animationDelay: '200ms', animationDuration: '800ms' }}>{t.hero2} <span key={lang + wordIndex} className="typed-word gradient-text">{typedWords[wordIndex]}</span></span>
             </h1>
             <p className="hero-subtitle hero-enter mt-8 max-w-[620px] text-[clamp(17px,2vw,21px)] leading-[1.65] text-[#46506D]" style={{ animationDelay: '350ms', animationDuration: '700ms' }}>{t.heroText}</p>
             <div className="hero-actions hero-enter mt-9 flex flex-wrap gap-3" style={{ animationDelay: '500ms', animationDuration: '600ms' }}>
@@ -371,12 +371,11 @@ export default function Home() {
             <p className="mx-auto mt-5 max-w-[600px] text-sm leading-7 text-[#667178]">{t.pricesText}</p>
           </div>
           <div className={'price-live-grid ' + (pricesExpanded ? 'is-expanded' : '')}>
-            {services.map((service, index) => <article data-reveal key={service.id} className={'pricing-card ' + (index === 1 ? 'popular' : index === 2 ? 'enterprise' : '')} style={{ transitionDelay: (index % 3) * 80 + 'ms' }}>
-              {index === 1 && <span className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-[#182B82] to-[#5368FF] px-5 py-2 text-[10px] font-extrabold uppercase tracking-[.12em] text-white shadow-lg">AKA-DENT</span>}
+            {services.map((service, index) => <article data-reveal key={service.id} className="pricing-card" style={{ transitionDelay: (index % 3) * 80 + 'ms' }}>
               <div className="flex items-start justify-between"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-[#EEF1FF] text-[#3247C5]"><Check size={23} /></span><span className="text-[10px] font-bold uppercase tracking-[.14em] opacity-60">{service.slug}</span></div>
               <h3 className="card-title mt-8">{lang === 'kk' ? service.title_kk : service.title_ru}</h3><p className="mt-3 min-h-12 text-sm leading-6 opacity-70">{lang === 'kk' ? service.description_kk : service.description_ru}</p>
-              <div className="mt-7 flex items-end gap-2"><span className="price">{t.from} {service.price_from.toLocaleString(lang === 'kk' ? 'kk-KZ' : 'ru-RU')}</span><span className="pb-2 text-xs opacity-60">₸</span></div>
-              <a href="#booking" className={index === 2 ? 'mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-4 text-sm font-bold text-[#111E61]' : 'primary-btn mt-auto px-6 py-4 text-sm font-bold'}>{t.book} <ArrowUpRight size={17} /></a>
+              <div className="price-block mt-7"><span className="price-prefix">{t.from}</span><div className="price-amount"><span className="price">{service.price_from.toLocaleString(lang === 'kk' ? 'kk-KZ' : 'ru-RU')}</span><span className="price-currency">₸</span></div></div>
+              <a href="#booking" className="primary-btn mt-auto px-6 py-4 text-sm font-bold">{t.book} <ArrowUpRight size={17} /></a>
             </article>)}
           </div>
           <button type="button" className="mobile-expand" onClick={() => setPricesExpanded((current) => !current)} aria-expanded={pricesExpanded}>{pricesExpanded ? t.showLess : t.showAll}<ChevronDown size={17} /></button>

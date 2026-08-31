@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { isAdminUser } from '@/app/chatgpt-auth';
 import { getDb, getPublicData } from '@/lib/db';
+import { ADMIN_APPOINTMENTS_QUERY } from '@/lib/appointments';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,7 +22,7 @@ export async function GET() {
     const db = await getDb();
     const [data, appointments] = await Promise.all([
       getPublicData(),
-      db.prepare('SELECT * FROM appointments ORDER BY created_at DESC LIMIT 150').all(),
+      db.prepare(ADMIN_APPOINTMENTS_QUERY).all(),
     ]);
     return NextResponse.json({ ...data, appointments: appointments.results });
   } catch (error) {

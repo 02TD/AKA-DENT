@@ -286,7 +286,7 @@ export default function Home() {
               const Icon = [ScanLine, Microscope, Heart, Smile, ShieldCheck, Stethoscope][index % 6];
               return <article data-reveal key={service.id} className={'feature-card ' + (index === 0 || index === 5 ? 'large' : '')} style={{ transitionDelay: index * 80 + 'ms' }}>
                 <div className="feature-orb" /><div className="icon-box"><Icon size={24} /></div>
-                <div className="relative mt-auto pt-10"><span className="mb-3 block text-[10px] font-bold uppercase tracking-[.16em] text-[#3247C5]">{t.from} {service.price_from.toLocaleString(lang === 'kk' ? 'kk-KZ' : 'ru-RU')} ₸</span>
+                <div className="relative mt-auto pt-10"><span className="service-price mb-3 block text-[10px] font-bold uppercase tracking-[.16em]">{t.from} {service.price_from.toLocaleString(lang === 'kk' ? 'kk-KZ' : 'ru-RU')} ₸</span>
                   <h3 className="card-title">{lang === 'kk' ? service.title_kk : service.title_ru}</h3><p className="mt-4 text-sm leading-7 text-[#647077]">{lang === 'kk' ? service.description_kk : service.description_ru}</p>
                   <a href="#booking" className="more-link mt-6 inline-flex items-center gap-2">{t.details} <ArrowRight size={15} /></a></div>
               </article>;

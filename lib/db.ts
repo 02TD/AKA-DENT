@@ -47,6 +47,11 @@ export async function ensureDatabase(db: D1Database) {
     ));
   });
   if (seedQueries.length) await db.batch(seedQueries);
+  await db.prepare(`UPDATE settings SET value_ru = ?, value_kk = ?, updated_at = datetime('now')
+    WHERE key = 'review_source' AND (value_ru LIKE '%2GIS%' OR value_kk LIKE '%2GIS%')`).bind(
+    'Отзывы пациентов AKA-DENT', 'AKA-DENT пациенттерінің пікірлері',
+  ).run();
+  await db.prepare("UPDATE reviews SET source_url = '', updated_at = datetime('now') WHERE source_url = 'https://go.2gis.com/h3Mcu'").run();
   await db.prepare('PRAGMA optimize').run();
   schemaReady = true;
 }
@@ -57,7 +62,8 @@ export async function getPublicData() {
     db.prepare('SELECT key, value_ru, value_kk, updated_at FROM settings ORDER BY key').all(),
     db.prepare('SELECT * FROM services WHERE active = 1 ORDER BY sort_order, title_ru').all(),
     db.prepare('SELECT * FROM doctors WHERE active = 1 ORDER BY sort_order, name_ru').all(),
-    db.prepare('SELECT * FROM reviews WHERE active = 1 ORDER BY published_at DESC, updated_at DESC LIMIT 6').all(),
+    db.prepare(`SELECT id, author, rating, body_ru, body_kk, published_at
+      FROM reviews WHERE active = 1 ORDER BY published_at DESC, updated_at DESC LIMIT 6`).all(),
   ]);
   return { settings: settings.results, services: services.results, doctors: doctors.results, reviews: reviews.results };
 }

@@ -22,15 +22,15 @@ const copy = {
     schedule: 'Пн–Пт · 09:00–19:00', badge: 'Стоматология полного цикла · Караганда',
     hero1: 'Лечим так,', hero2: 'чтобы', words: ['не переделывать', 'сохранить своё', 'вернуть уверенность'],
     heroText: 'Команда AKA-DENT восстанавливает здоровье, эстетику и жевательную функцию — от 3D-диагностики до имплантации и протезирования в одном месте.',
-    whatsapp: 'Записаться в WhatsApp', meet: 'Познакомиться с врачами', ratings: '338 оценок и 241 отзыв в 2GIS',
+    whatsapp: 'Записаться онлайн', meet: 'Познакомиться с врачами', ratings: '4 врача · 6 направлений лечения',
     open: 'Открыты для записи', consult: 'Консультация от 2 000 ₸ · ул. Комиссарова, 28',
     servicesEye: 'Полный цикл', servicesTitle: 'Всё лечение — по одному понятному плану', servicesText: 'Цены и описания обновляются из панели управления. Точную стоимость врач подтверждает после диагностики.', details: 'Подробнее',
     teamEye: 'Команда AKA-DENT', teamTitle: 'У каждого врача — своё направление и личная страница', teamText: 'Откройте профиль, узнайте специализацию и запишитесь к выбранному врачу.', chooseDoctor: 'Открыть профиль',
     processEye: 'Путь пациента', processTitle: 'Сначала понимаем. Потом лечим.', processText: 'Диагностика, прозрачный маршрут и лечение только после согласования.', step: 'Шаг',
-    reviewsEye: 'Последние отзывы', reviewsTitle: 'Репутация, которую можно проверить', reviewsLink: 'Все отзывы в 2GIS', reviewSource: 'проверенный отзыв · 2GIS',
+    reviewsEye: 'Отзывы пациентов', reviewsTitle: 'Истории пациентов AKA-DENT', reviewsLink: 'Мнения наших пациентов', reviewSource: 'пациент AKA-DENT',
     pricesEye: 'Открытый прайс', pricesTitle: 'Стоимость до визита, а не после', pricesText: 'Актуальные стартовые цены управляются клиникой через защищённую админ-панель.', from: 'от', priceNote: 'Цены указаны «от» и не являются публичной офертой. Точная стоимость определяется после осмотра.',
     faqEye: 'Частые вопросы', faqTitle: 'Честно о важном', faqText: 'Если не нашли ответ — напишите администратору. Поможем выбрать врача и удобное время.',
-    ctaBadge: 'Готовы помочь', ctaTitle: 'Начните с разговора, а не с лечения', ctaText: 'Оставьте имя и номер. Заявка сохранится в панели клиники, затем откроется WhatsApp с готовым сообщением.', name: 'Ваше имя', phone: '+7 ___ ___ __ __', send: 'Записаться', sending: 'Сохраняем', sent: 'Заявка сохранена. WhatsApp открыт — осталось отправить сообщение.', privacy: 'Без рассылок. Контакты используются только для связи по вашей записи.',
+    ctaBadge: 'Готовы помочь', ctaTitle: 'Начните с разговора, а не с лечения', ctaText: 'Оставьте имя и номер. Заявка поступит администратору клиники — мы свяжемся с вами и подберём удобное время.', name: 'Ваше имя', phone: '+7 ___ ___ __ __', send: 'Отправить заявку', sending: 'Отправляем', sent: 'Заявка принята! Администратор AKA-DENT свяжется с вами по указанному номеру.', sendError: 'Не удалось отправить заявку. Проверьте соединение или позвоните нам.', privacy: 'Без рассылок. Контакты используются только для связи по вашей записи.',
     address: 'Адрес', booking: 'Запись', hours: 'График', city: 'Новый город · Караганда', callWa: 'Звонок или WhatsApp', weekend: 'Сб 09:00–15:00 · Вс выходной',
     footerText: 'Стоматология полного цикла в Караганде. Лечим так, чтобы не переделывать.', clinic: 'О клинике', support: 'Поддержка', admin: 'Панель управления', disclaimer: 'Информация на сайте не заменяет консультацию врача', showAll: 'Показать все', showLess: 'Свернуть', mobileCall: 'Позвонить',
   },
@@ -39,42 +39,35 @@ const copy = {
     schedule: 'Дс–Жм · 09:00–19:00', badge: 'Толық циклді стоматология · Қарағанды',
     hero1: 'Емдейміз,', hero2: 'қайта жасатпау үшін', words: ['табиғи тісті сақтау', 'сенімді қайтару', 'нәтижені бекіту'],
     heroText: 'AKA-DENT командасы денсаулықты, эстетиканы және шайнау қызметін бір жерде қалпына келтіреді: 3D-диагностикадан имплантация мен протездеуге дейін.',
-    whatsapp: 'WhatsApp арқылы жазылу', meet: 'Дәрігерлермен танысу', ratings: '2GIS-та 338 баға және 241 пікір',
+    whatsapp: 'Онлайн жазылу', meet: 'Дәрігерлермен танысу', ratings: '4 дәрігер · 6 емдеу бағыты',
     open: 'Жазылуға ашықпыз', consult: 'Кеңес 2 000 ₸ бастап · Комиссаров көш., 28',
     servicesEye: 'Толық цикл', servicesTitle: 'Барлық ем — бір түсінікті жоспармен', servicesText: 'Бағалар мен сипаттамалар басқару панелінен жаңартылады. Нақты құнын дәрігер диагностикадан кейін растайды.', details: 'Толығырақ',
     teamEye: 'AKA-DENT командасы', teamTitle: 'Әр дәрігердің жеке бағыты және өз парақшасы бар', teamText: 'Профильді ашып, мамандануын біліп, таңдаған дәрігерге жазылыңыз.', chooseDoctor: 'Профильді ашу',
     processEye: 'Пациент жолы', processTitle: 'Алдымен түсінеміз. Содан кейін емдейміз.', processText: 'Диагностика, ашық жоспар және тек келісілгеннен кейінгі ем.', step: 'Қадам',
-    reviewsEye: 'Соңғы пікірлер', reviewsTitle: 'Тексеруге болатын бедел', reviewsLink: '2GIS-тағы барлық пікір', reviewSource: 'тексерілген пікір · 2GIS',
+    reviewsEye: 'Пациент пікірлері', reviewsTitle: 'AKA-DENT пациенттерінің оқиғалары', reviewsLink: 'Пациенттеріміздің пікірі', reviewSource: 'AKA-DENT пациенті',
     pricesEye: 'Ашық прайс', pricesTitle: 'Құны қабылдауға дейін белгілі', pricesText: 'Өзекті бастапқы бағаларды клиника қорғалған басқару панелі арқылы жаңартады.', from: 'бастап', priceNote: 'Бағалар бастапқы мәнде көрсетілген және жария оферта емес. Нақты құн тексеруден кейін анықталады.',
     faqEye: 'Жиі сұрақтар', faqTitle: 'Маңыздысы туралы ашық', faqText: 'Жауап табылмаса, әкімшіге жазыңыз. Дәрігер мен ыңғайлы уақытты таңдауға көмектесеміз.',
-    ctaBadge: 'Көмектесуге дайынбыз', ctaTitle: 'Емнен емес, әңгімеден бастаңыз', ctaText: 'Атыңыз бен нөміріңізді қалдырыңыз. Өтінім клиника панеліне сақталып, WhatsApp-та дайын хабарлама ашылады.', name: 'Атыңыз', phone: '+7 ___ ___ __ __', send: 'Жазылу', sending: 'Сақталуда', sent: 'Өтінім сақталды. WhatsApp ашылды — хабарламаны жіберу ғана қалды.', privacy: 'Жарнама жібермейміз. Байланыс деректері тек жазылу үшін қолданылады.',
+    ctaBadge: 'Көмектесуге дайынбыз', ctaTitle: 'Емнен емес, әңгімеден бастаңыз', ctaText: 'Атыңыз бен нөміріңізді қалдырыңыз. Өтінім клиника әкімшісіне түседі — сізге хабарласып, ыңғайлы уақытты таңдаймыз.', name: 'Атыңыз', phone: '+7 ___ ___ __ __', send: 'Өтінімді жіберу', sending: 'Жіберілуде', sent: 'Өтінім қабылданды! AKA-DENT әкімшісі көрсетілген нөмірге хабарласады.', sendError: 'Өтінімді жіберу мүмкін болмады. Байланысты тексеріңіз немесе бізге қоңырау шалыңыз.', privacy: 'Жарнама жібермейміз. Байланыс деректері тек жазылу үшін қолданылады.',
     address: 'Мекенжай', booking: 'Жазылу', hours: 'Жұмыс уақыты', city: 'Жаңа қала · Қарағанды', callWa: 'Қоңырау немесе WhatsApp', weekend: 'Сб 09:00–15:00 · Жс демалыс',
     footerText: 'Қарағандыдағы толық циклді стоматология. Қайта жасатпау үшін сапалы емдейміз.', clinic: 'Клиника туралы', support: 'Қолдау', admin: 'Басқару панелі', disclaimer: 'Сайттағы ақпарат дәрігер кеңесін алмастырмайды', showAll: 'Барлығын көру', showLess: 'Жинау', mobileCall: 'Қоңырау',
   },
 } as const;
-const avatars = [
-  'https://images.unsplash.com/photo-1494790108755-2616b612b786?auto=format&fit=crop&w=160&q=90',
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=160&q=90',
-  'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=160&q=90',
-  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=160&q=90',
-  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=160&q=90',
-];
 const stats = [
-  { value: 4.9, suffix: '', label: 'рейтинг в 2GIS', trend: 'подтверждён' },
-  { value: 338, suffix: '', label: 'оценок пациентов', trend: 'реальные визиты' },
-  { value: 241, suffix: '', label: 'подробный отзыв', trend: 'открыты к диалогу' },
-  { value: 18, suffix: '', label: 'фото в 2GIS', trend: 'без фотостоков' },
+  { value: 4, suffix: '', label: 'профиля врачей', trend: 'личные страницы' },
+  { value: 6, suffix: '', label: 'направлений в прайсе', trend: 'полный цикл' },
+  { value: 2, suffix: '', label: 'языка на сайте', trend: 'RU · KZ' },
+  { value: 6, suffix: '', label: 'дней приёма в неделю', trend: 'Пн · Сб' },
 ];
 const faqsRu = [
-  { q: 'Сколько стоит консультация?', a: 'В опубликованном прайсе 2GIS консультация стоит от 2 000 до 5 000 ₸. Точная стоимость зависит от специалиста и формата приёма — администратор уточнит её при записи.' },
+  { q: 'Сколько стоит консультация?', a: 'По актуальному прайсу AKA-DENT консультация стоит от 2 000 до 5 000 ₸. Точная стоимость зависит от специалиста и формата приёма — администратор уточнит её при записи.' },
   { q: 'Можно ли сразу сделать 3D-снимок?', a: 'Да. На том же адресе работает центр Aqyl-SCAN. В карточке указаны КТ зубов, ОПТГ и прицельные снимки — врач подскажет, какой формат нужен именно вам.' },
   { q: 'Когда работает клиника?', a: 'AKA-DENT принимает с понедельника по пятницу с 09:00 до 19:00, в субботу с 09:00 до 15:00. Воскресенье — выходной.' },
-  { q: 'Какие способы оплаты доступны?', a: 'По данным 2GIS можно оплатить картой, наличными или QR-кодом. В отзывах пациенты также упоминают рассрочку; актуальные условия лучше уточнить у администратора.' },
+  { q: 'Какие способы оплаты доступны?', a: 'В клинике можно оплатить картой, наличными или QR-кодом. Актуальные условия рассрочки лучше уточнить у администратора.' },
   { q: 'Сколько стоит имплантация?', a: 'Опубликованная стартовая цена импланта — от 90 000 ₸. Итог зависит от снимка, системы импланта, объёма хирургии и будущей коронки.' },
   { q: 'Как подготовиться к первому визиту?', a: 'Возьмите удостоверение личности и имеющиеся снимки, если они сделаны недавно. Запишите лекарства и хронические заболевания — это поможет врачу безопасно составить план.' },
 ];
 const faqsKk = [
-  { q: 'Кеңес қанша тұрады?', a: '2GIS-та жарияланған прайс бойынша кеңес 2 000–5 000 ₸ тұрады. Нақты бағаны әкімші жазылу кезінде нақтылайды.' },
+  { q: 'Кеңес қанша тұрады?', a: 'AKA-DENT-тің өзекті прайсы бойынша кеңес 2 000–5 000 ₸ тұрады. Нақты бағаны әкімші жазылу кезінде нақтылайды.' },
   { q: '3D-суретті бірден түсіруге бола ма?', a: 'Иә. Осы мекенжайда Aqyl-SCAN орталығы жұмыс істейді: КТ, ОПТГ және нысаналы суреттер.' },
   { q: 'Клиника қашан жұмыс істейді?', a: 'Дүйсенбі–жұма 09:00–19:00, сенбі 09:00–15:00. Жексенбі — демалыс.' },
   { q: 'Қандай төлем тәсілдері бар?', a: 'Картамен, қолма-қол немесе QR-кодпен төлеуге болады. Бөліп төлеудің өзекті шарттарын әкімшіден сұраңыз.' },
@@ -93,6 +86,7 @@ export default function Home() {
   const [lineActive, setLineActive] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
   const [servicesExpanded, setServicesExpanded] = useState(false);
   const [pricesExpanded, setPricesExpanded] = useState(false);
   const [booking, setBooking] = useState({ name: '', phone: '', website: '' });
@@ -106,8 +100,8 @@ export default function Home() {
   const doctors: DoctorItem[] = publicData?.doctors ?? doctorsSeed.map((item) => ({ ...item }));
   const reviews: ReviewItem[] = publicData?.reviews ?? reviewsSeed.map((item) => ({ ...item }));
   const localizedStats = lang === 'kk' ? [
-    { ...stats[0], label: '2GIS рейтингі', trend: 'расталған' }, { ...stats[1], label: 'пациент бағасы', trend: 'нақты келулер' },
-    { ...stats[2], label: 'толық пікір', trend: 'ашық диалог' }, { ...stats[3], label: '2GIS-тағы фото', trend: 'өз фотоларымыз' },
+    { ...stats[0], label: 'дәрігер профилі', trend: 'жеке парақшалар' }, { ...stats[1], label: 'прайстағы бағыт', trend: 'толық цикл' },
+    { ...stats[2], label: 'сайт тілі', trend: 'RU · KZ' }, { ...stats[3], label: 'аптасына қабылдау күні', trend: 'Дс · Сб' },
   ] : stats;
   const faqs = lang === 'kk' ? faqsKk : faqsRu;
 
@@ -196,12 +190,15 @@ export default function Home() {
   const handleSubmit = useCallback(async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSubmitting(true);
+    setSubmitError(false);
     try {
       const response = await fetch('/api/appointments', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...booking, language: lang }) });
-      const result = await response.json() as { whatsappUrl?: string };
-      if (!response.ok || !result.whatsappUrl) throw new Error('save_failed');
+      const result = await response.json() as { ok?: boolean };
+      if (!response.ok || !result.ok) throw new Error('save_failed');
       setSubmitted(true);
-      window.open(result.whatsappUrl, '_blank', 'noopener,noreferrer');
+      setBooking({ name: '', phone: '', website: '' });
+    } catch {
+      setSubmitError(true);
     } finally {
       setSubmitting(false);
     }
@@ -259,8 +256,8 @@ export default function Home() {
               <a href="#doctors" className="ghost-btn px-7 py-4 text-[13px] font-bold"><Play size={16} fill="currentColor" /> {t.meet}</a>
             </div>
             <div className="hero-social hero-enter mt-9 flex flex-wrap items-center gap-4" style={{ animationDelay: '650ms', animationDuration: '600ms' }}>
-              <div className="avatar-stack flex">{avatars.slice(0, 4).map((src, index) => <img key={src} src={src} alt={'Пациент AKA-DENT ' + (index + 1)} loading="lazy" decoding="async" />)}</div>
-              <div><div className="flex items-center gap-1 text-[#F4A629]" aria-label="4,9 / 5">{[0,1,2,3,4].map((star) => <Star key={star} size={14} fill="currentColor" />)}<span className="ml-1 text-xs font-extrabold text-[#111E61]">4,9</span></div><p className="mt-1 text-xs font-semibold text-[#4A556D]"><strong className="text-[#0F0F0F]">{t.ratings}</strong></p></div>
+              <div className="avatar-stack flex">{doctors.slice(0, 4).map((doctor) => <img key={doctor.slug} src={doctor.image_url} alt={lang === 'kk' ? doctor.name_kk : doctor.name_ru} loading="lazy" decoding="async" />)}</div>
+              <div className="flex items-center gap-2 text-xs font-semibold text-[#4A556D]"><BadgeCheck size={18} className="text-[#3247C5]" /><strong className="text-[#0F0F0F]">{t.ratings}</strong></div>
             </div>
           </div>
         </div>
@@ -352,7 +349,7 @@ export default function Home() {
         <div className="site-container">
           <div data-reveal className="mb-14 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div><span className="eyebrow">{t.reviewsEye}</span><h2 className="section-title mt-5">{t.reviewsTitle}</h2></div>
-            <a href="https://go.2gis.com/h3Mcu" target="_blank" rel="noreferrer" className="flex items-center gap-3 text-sm font-semibold text-[#455258]"><span className="flex text-[#F4A629]">{[0,1,2,3,4].map((star) => <Star key={star} size={16} fill="currentColor" />)}</span>{t.reviewsLink} <ArrowUpRight size={15} /></a>
+            <div className="flex items-center gap-3 text-sm font-semibold text-[#455258]"><span className="flex text-[#F4A629]">{[0,1,2,3,4].map((star) => <Star key={star} size={16} fill="currentColor" />)}</span>{t.reviewsLink}</div>
           </div>
           <div className="testimonials-scroll grid gap-5 md:grid-cols-2">
             {reviews.slice(0, 3).map((review, index) => <article data-reveal key={review.id} className={'testimonial ' + (index === 0 ? 'featured md:col-span-2' : '')} style={{ transitionDelay: index * 80 + 'ms' }}>
@@ -413,7 +410,7 @@ export default function Home() {
               <h2 className="display mt-6 text-[clamp(34px,5vw,56px)] font-semibold leading-[.98] tracking-[-.04em]">{t.ctaTitle}</h2>
               <p className="mx-auto mt-5 max-w-[610px] text-sm leading-7 text-white/76">{t.ctaText}</p>
               {submitted ? (
-                <div className="mx-auto mt-8 max-w-[670px] rounded-full border border-white/25 bg-white/15 px-6 py-5 text-sm font-bold backdrop-blur">{t.sent}</div>
+                <div className="booking-success mx-auto mt-8 max-w-[670px]" role="status" aria-live="polite"><CalendarCheck size={24} /> <span>{t.sent}</span></div>
               ) : (
                 <form className="booking-pill" onSubmit={handleSubmit}>
                   <label htmlFor="booking-name" className="sr-only">{t.name}</label><input id="booking-name" type="text" value={booking.name} onChange={(event) => setBooking((current) => ({ ...current, name: event.target.value }))} placeholder={t.name} autoComplete="name" required />
@@ -422,11 +419,12 @@ export default function Home() {
                   <button type="submit" disabled={submitting}>{submitting ? <span className="inline-flex items-center gap-2"><Loader2 size={17} className="spinner" /> {t.sending}</span> : t.send}</button>
                 </form>
               )}
+              {submitError && <p className="booking-error" role="alert">{t.sendError}</p>}
               <p className="mt-4 text-[10px] text-white/62">{t.privacy}</p>
             </div>
           </div>
           <div data-reveal className="mt-5 grid gap-5 md:grid-cols-3">
-            <a href="https://go.2gis.com/h3Mcu" target="_blank" rel="noreferrer" className="contact-card group"><span className="contact-icon"><MapPin size={21} /></span><div><span className="text-[10px] font-extrabold uppercase tracking-[.14em] text-[#7A849B]">{t.address}</span><strong className="mt-2 block text-base text-[#111E61]">Комиссарова, 28</strong><span className="mt-1 block text-xs text-[#6B7489]">{t.city}</span></div><ArrowUpRight className="ml-auto text-[#3247C5] transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" size={18} /></a>
+            <div className="contact-card"><span className="contact-icon"><MapPin size={21} /></span><div><span className="text-[10px] font-extrabold uppercase tracking-[.14em] text-[#7A849B]">{t.address}</span><strong className="mt-2 block text-base text-[#111E61]">Комиссарова, 28</strong><span className="mt-1 block text-xs text-[#6B7489]">{t.city}</span></div></div>
             <a href="tel:+77001215454" className="contact-card group"><span className="contact-icon"><Phone size={21} /></span><div><span className="text-[10px] font-extrabold uppercase tracking-[.14em] text-[#7A849B]">{t.booking}</span><strong className="mt-2 block text-base text-[#111E61]">+7 700 121-54-54</strong><span className="mt-1 block text-xs text-[#6B7489]">{t.callWa}</span></div><ArrowUpRight className="ml-auto text-[#3247C5] transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" size={18} /></a>
             <div className="contact-card"><span className="contact-icon"><Clock size={21} /></span><div><span className="text-[10px] font-extrabold uppercase tracking-[.14em] text-[#7A849B]">{t.hours}</span><strong className="mt-2 block text-base text-[#111E61]">{t.schedule}</strong><span className="mt-1 block text-xs text-[#6B7489]">{t.weekend}</span></div></div>
           </div>
@@ -439,7 +437,7 @@ export default function Home() {
             <div>
               <a href="#top" className="flex items-center gap-3" aria-label="AKA-DENT — на главную"><span className="brand-mark"><span /><span /><span /></span><span><span className="block text-[17px] font-extrabold tracking-[.18em] text-[#111E61]">AKA-DENT</span><span className="block text-[7px] font-bold uppercase tracking-[.28em] text-[#7580A8]">стоматология</span></span></a>
               <p className="mt-5 max-w-[250px] text-sm leading-7 text-[#68747A]">{t.footerText}</p>
-              <div className="mt-6 flex gap-2"><a href="https://instagram.com/akadent_stom" target="_blank" rel="noreferrer" className="social-btn" aria-label="AKA-DENT в Instagram"><Camera size={17} /></a><a href="https://go.2gis.com/h3Mcu" target="_blank" rel="noreferrer" className="social-btn" aria-label="AKA-DENT в 2GIS"><MapPin size={17} /></a><a href="https://wa.me/77001215454" target="_blank" rel="noreferrer" className="social-btn" aria-label="Написать AKA-DENT в WhatsApp"><MessageCircle size={17} /></a></div>
+              <div className="mt-6 flex gap-2"><a href="https://instagram.com/akadent_stom" target="_blank" rel="noreferrer" className="social-btn" aria-label="AKA-DENT в Instagram"><Camera size={17} /></a><a href="https://wa.me/77001215454" target="_blank" rel="noreferrer" className="social-btn" aria-label="Написать AKA-DENT в WhatsApp"><MessageCircle size={17} /></a></div>
             </div>
             <div><h3 className="text-[11px] font-extrabold uppercase tracking-[.14em]">{t.nav[0]}</h3><div className="mt-6 flex flex-col gap-4">{services.slice(0,4).map((service) => <a key={service.id} className="footer-link" href="#services">{lang === 'kk' ? service.title_kk : service.title_ru}</a>)}</div></div>
             <div><h3 className="text-[11px] font-extrabold uppercase tracking-[.14em]">{t.clinic}</h3><div className="mt-6 flex flex-col gap-4"><a className="footer-link" href="#reviews">{t.nav[2]}</a><a className="footer-link" href="#process">{t.nav[1]}</a><a className="footer-link" href="#doctors">{t.meet}</a><a className="footer-link" href="#prices">{t.nav[3]}</a></div></div>

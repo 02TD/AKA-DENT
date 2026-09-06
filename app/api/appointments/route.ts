@@ -28,15 +28,7 @@ export async function POST(request: Request) {
       (id, name, phone, service_slug, doctor_slug, language, notes)
       VALUES (?, ?, ?, ?, ?, ?, ?)`).bind(id, name, phone, serviceSlug, doctorSlug, language, notes).run();
 
-    const intro = language === 'kk' ? 'Сәлеметсіз бе! AKA-DENT клиникасына жазылғым келеді.' : 'Здравствуйте! Хочу записаться в AKA-DENT.';
-    const parts = [intro, `Имя / Аты: ${name}`, `Телефон: ${phone}`];
-    if (serviceSlug) parts.push(`Услуга / Қызмет: ${serviceSlug}`);
-    if (doctorSlug) parts.push(`Врач / Дәрігер: ${doctorSlug}`);
-    if (notes) parts.push(`Комментарий / Түсініктеме: ${notes}`);
-    parts.push(`Заявка / Өтінім: ${id.slice(0, 8)}`);
-    const whatsappUrl = 'https://wa.me/77001215454?text=' + encodeURIComponent(parts.join('\n'));
-
-    return NextResponse.json({ ok: true, id, whatsappUrl });
+    return NextResponse.json({ ok: true, id });
   } catch (error) {
     console.error('appointment', error);
     return NextResponse.json({ error: 'save_failed' }, { status: 500 });

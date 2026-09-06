@@ -45,7 +45,7 @@ export default function AdminDashboard({ user }: { user: { email: string; name: 
   const [notice, setNotice] = useState('');
   const [loadError, setLoadError] = useState('');
   const [uploadingDoctor, setUploadingDoctor] = useState('');
-  const [reviewDraft, setReviewDraft] = useState({ author: '', rating: 5, body_ru: '', body_kk: '', source_url: 'https://go.2gis.com/h3Mcu', published_at: new Date().toISOString().slice(0, 10) });
+  const [reviewDraft, setReviewDraft] = useState({ author: '', rating: 5, body_ru: '', body_kk: '', source_url: '', published_at: new Date().toISOString().slice(0, 10) });
 
   const loadData = useCallback(async () => {
     setLoading(true); setLoadError('');
@@ -147,7 +147,7 @@ export default function AdminDashboard({ user }: { user: { email: string; name: 
         </TabsContent>
 
         <TabsContent value="reviews" className="admin-panel">
-          <div className="admin-panel-head"><div><span>Репутация</span><h2>Отзывы на сайте</h2><p>Официальный API 2GIS не отдаёт тексты отзывов. Добавьте свежий проверенный отзыв здесь — на сайте он появится автоматически.</p></div><a className="admin-source-link" href="https://go.2gis.com/h3Mcu" target="_blank" rel="noreferrer">Открыть 2GIS <ExternalLink /></a></div>
+          <div className="admin-panel-head"><div><span>Репутация</span><h2>Отзывы на сайте</h2><p>Добавьте новый отзыв пациента здесь — после сохранения он автоматически появится на сайте.</p></div></div>
           <article className="admin-edit-card review-create"><h3>Добавить свежий отзыв</h3><div className="admin-fields two"><label>Автор<Input value={reviewDraft.author} onChange={(event) => setReviewDraft({ ...reviewDraft, author: event.target.value })} /></label><label>Дата<Input type="date" value={reviewDraft.published_at} onChange={(event) => setReviewDraft({ ...reviewDraft, published_at: event.target.value })} /></label><label>Текст RU<Textarea value={reviewDraft.body_ru} onChange={(event) => setReviewDraft({ ...reviewDraft, body_ru: event.target.value })} /></label><label>Мәтін KZ<Textarea value={reviewDraft.body_kk} onChange={(event) => setReviewDraft({ ...reviewDraft, body_kk: event.target.value })} /></label></div><Button className="admin-save" disabled={!reviewDraft.author || !reviewDraft.body_ru || saving === 'review-new'} onClick={async () => { const ok = await saveAction('review-new', { action: 'upsert_review', ...reviewDraft }); if (ok) { setReviewDraft({ ...reviewDraft, author: '', body_ru: '', body_kk: '' }); await loadData(); } }}>{saving === 'review-new' ? <Loader2 className="spinner" /> : <MessageSquareText />} Опубликовать отзыв</Button></article>
           <div className="admin-review-list">{data.reviews.map((review) => <article key={review.id}><div><strong>{review.author}</strong><span>{'★'.repeat(review.rating)}</span><time>{review.published_at}</time></div><p>{review.body_ru}</p><small>{review.body_kk}</small></article>)}</div>
         </TabsContent>

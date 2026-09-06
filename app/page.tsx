@@ -59,10 +59,10 @@ const copy = {
   },
 } as const;
 const stats = [
-  { value: 4, suffix: '', label: 'профиля врачей', trend: 'личные страницы' },
-  { value: 6, suffix: '', label: 'направлений в прайсе', trend: 'полный цикл' },
-  { value: 2, suffix: '', label: 'языка на сайте', trend: 'RU · KZ' },
-  { value: 6, suffix: '', label: 'дней приёма в неделю', trend: 'Пн · Сб' },
+  { value: 1, suffix: '', label: 'клиника в Караганде', trend: 'один адрес' },
+  { value: 7, suffix: '+', label: 'лет работы', trend: 'с 2018 года' },
+  { value: 280, suffix: '+', label: 'оценок пациентов', trend: 'доверие пациентов' },
+  { value: 6, suffix: '', label: 'направлений лечения', trend: 'полный цикл' },
 ];
 const faqsRu = [
   { q: 'Сколько стоит консультация?', a: 'По актуальному прайсу AKA-DENT консультация стоит от 2 000 до 5 000 ₸. Точная стоимость зависит от специалиста и формата приёма — администратор уточнит её при записи.' },
@@ -106,8 +106,8 @@ export default function Home() {
   const doctors: DoctorItem[] = publicData?.doctors ?? doctorsSeed.map((item) => ({ ...item }));
   const reviews: ReviewItem[] = publicData?.reviews ?? reviewsSeed.map((item) => ({ ...item }));
   const localizedStats = lang === 'kk' ? [
-    { ...stats[0], label: 'дәрігер профилі', trend: 'жеке парақшалар' }, { ...stats[1], label: 'прайстағы бағыт', trend: 'толық цикл' },
-    { ...stats[2], label: 'сайт тілі', trend: 'RU · KZ' }, { ...stats[3], label: 'аптасына қабылдау күні', trend: 'Дс · Сб' },
+    { ...stats[0], label: 'Қарағандыдағы клиника', trend: 'бір мекенжай' }, { ...stats[1], label: 'жылдық тәжірибе', trend: '2018 жылдан бері' },
+    { ...stats[2], label: 'пациент бағасы', trend: 'пациент сенімі' }, { ...stats[3], label: 'емдеу бағыты', trend: 'толық цикл' },
   ] : stats;
   const faqs = lang === 'kk' ? faqsKk : faqsRu;
 

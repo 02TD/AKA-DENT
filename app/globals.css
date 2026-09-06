@@ -315,8 +315,11 @@ body::-webkit-scrollbar-thumb { background: linear-gradient(var(--accent-from), 
   .doctor-nav { grid-template-columns: 1fr auto; }.doctor-brand { display: none; }.doctor-hero { border-radius: 26px; }.doctor-photo { min-height: 470px; }.doctor-intro { padding: 30px 24px 38px; }.doctor-booking { padding: 34px 22px; border-radius: 26px; }.doctor-form { grid-template-columns: 1fr; }.doctor-form label:last-of-type,.doctor-form button { grid-column: auto; }
 }
 @media (max-width: 480px) {
-  .site-nav .site-container > a:first-child > span:last-child { display: none; }
-  .site-nav .site-container > a:first-child { width: 40px; flex: none; }
+  .site-nav .site-container > a:first-child { width: auto; flex: none; }
+  .site-nav .site-container > a:first-child > .brand-copy { display: block; min-width: 0; }
+  .site-nav .site-container > a:first-child .brand-copy > span:first-child { font-size: 12px!important; letter-spacing: .1em!important; }
+  .site-nav .site-container > a:first-child .brand-copy > span:last-child { font-size: 5px!important; letter-spacing: .14em!important; }
+  .site-nav .lang-switch button { width: 30px; }
   .site-nav .site-container > div:last-child { flex: 1; justify-content: flex-end; }
   .site-nav .site-container { padding-inline: 12px; }
 }

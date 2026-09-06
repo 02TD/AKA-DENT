@@ -19,6 +19,8 @@ type PublicData = { settings: Array<{ key: string; value_ru: string; value_kk: s
 const copy = {
   ru: {
     nav: ['Услуги', 'Как мы лечим', 'Отзывы', 'Цены', 'Вопросы'], menu: 'Меню', book: 'Записаться',
+    homeLabel: 'AKA-DENT — на главную', brandType: 'стоматология', closeMenu: 'Закрыть меню', mobileNav: 'Мобильная навигация', heroAlt: 'Врач AKA-DENT проводит осмотр пациента',
+    clinicAreas: 'В одной клинике:', areasLabel: 'Направления лечения', areas: ['3D-диагностика','Имплантация','Ортопедия','Терапия','Хирургия','Пародонтология'], serviceLabel: 'УСЛУГА',
     schedule: 'Пн–Пт · 09:00–19:00', badge: 'Стоматология полного цикла · Караганда',
     hero1: 'Лечим так,', hero2: 'чтобы', words: ['не переделывать', 'сохранить своё', 'вернуть уверенность'],
     heroText: 'Команда AKA-DENT восстанавливает здоровье, эстетику и жевательную функцию — от 3D-диагностики до имплантации и протезирования в одном месте.',
@@ -32,10 +34,13 @@ const copy = {
     faqEye: 'Частые вопросы', faqTitle: 'Честно о важном', faqText: 'Если не нашли ответ — напишите администратору. Поможем выбрать врача и удобное время.',
     ctaBadge: 'Готовы помочь', ctaTitle: 'Начните с разговора, а не с лечения', ctaText: 'Оставьте имя и номер. Заявка поступит администратору клиники — мы свяжемся с вами и подберём удобное время.', name: 'Ваше имя', phone: '+7 ___ ___ __ __', send: 'Отправить заявку', sending: 'Отправляем', sent: 'Заявка принята! Администратор AKA-DENT свяжется с вами по указанному номеру.', sendError: 'Не удалось отправить заявку. Проверьте соединение или позвоните нам.', privacy: 'Без рассылок. Контакты используются только для связи по вашей записи.',
     address: 'Адрес', booking: 'Запись', hours: 'График', city: 'Новый город · Караганда', callWa: 'Звонок или WhatsApp', weekend: 'Сб 09:00–15:00 · Вс выходной',
+    addressLine: 'Комиссарова, 28', footerAddress: 'Караганда, ул. Комиссарова, 28', footerHours: 'Пн–Пт 09:00–19:00', copyrightCity: 'Караганда', instagramLabel: 'AKA-DENT в Instagram', whatsappLabel: 'Написать AKA-DENT в WhatsApp',
     footerText: 'Стоматология полного цикла в Караганде. Лечим так, чтобы не переделывать.', clinic: 'О клинике', support: 'Поддержка', admin: 'Панель управления', disclaimer: 'Информация на сайте не заменяет консультацию врача', showAll: 'Показать все', showLess: 'Свернуть', mobileCall: 'Позвонить',
   },
   kk: {
     nav: ['Қызметтер', 'Қалай емдейміз', 'Пікірлер', 'Бағалар', 'Сұрақтар'], menu: 'Мәзір', book: 'Жазылу',
+    homeLabel: 'AKA-DENT — басты бетке', brandType: 'тіс емханасы', closeMenu: 'Мәзірді жабу', mobileNav: 'Мобильді навигация', heroAlt: 'AKA-DENT дәрігері пациентті тексеріп жатыр',
+    clinicAreas: 'Бір клиникада:', areasLabel: 'Емдеу бағыттары', areas: ['3D-диагностика','Имплантация','Ортопедия','Терапия','Хирургия','Пародонтология'], serviceLabel: 'ҚЫЗМЕТ',
     schedule: 'Дс–Жм · 09:00–19:00', badge: 'Толық циклді стоматология · Қарағанды',
     hero1: 'Емдейміз,', hero2: 'қайта жасатпау үшін', words: ['табиғи тісті сақтау', 'сенімді қайтару', 'нәтижені бекіту'],
     heroText: 'AKA-DENT командасы денсаулықты, эстетиканы және шайнау қызметін бір жерде қалпына келтіреді: 3D-диагностикадан имплантация мен протездеуге дейін.',
@@ -49,6 +54,7 @@ const copy = {
     faqEye: 'Жиі сұрақтар', faqTitle: 'Маңыздысы туралы ашық', faqText: 'Жауап табылмаса, әкімшіге жазыңыз. Дәрігер мен ыңғайлы уақытты таңдауға көмектесеміз.',
     ctaBadge: 'Көмектесуге дайынбыз', ctaTitle: 'Емнен емес, әңгімеден бастаңыз', ctaText: 'Атыңыз бен нөміріңізді қалдырыңыз. Өтінім клиника әкімшісіне түседі — сізге хабарласып, ыңғайлы уақытты таңдаймыз.', name: 'Атыңыз', phone: '+7 ___ ___ __ __', send: 'Өтінімді жіберу', sending: 'Жіберілуде', sent: 'Өтінім қабылданды! AKA-DENT әкімшісі көрсетілген нөмірге хабарласады.', sendError: 'Өтінімді жіберу мүмкін болмады. Байланысты тексеріңіз немесе бізге қоңырау шалыңыз.', privacy: 'Жарнама жібермейміз. Байланыс деректері тек жазылу үшін қолданылады.',
     address: 'Мекенжай', booking: 'Жазылу', hours: 'Жұмыс уақыты', city: 'Жаңа қала · Қарағанды', callWa: 'Қоңырау немесе WhatsApp', weekend: 'Сб 09:00–15:00 · Жс демалыс',
+    addressLine: 'Комиссаров көшесі, 28', footerAddress: 'Қарағанды, Комиссаров көшесі, 28', footerHours: 'Дс–Жм 09:00–19:00', copyrightCity: 'Қарағанды', instagramLabel: 'AKA-DENT Instagram парақшасы', whatsappLabel: 'AKA-DENT-ке WhatsApp арқылы жазу',
     footerText: 'Қарағандыдағы толық циклді стоматология. Қайта жасатпау үшін сапалы емдейміз.', clinic: 'Клиника туралы', support: 'Қолдау', admin: 'Басқару панелі', disclaimer: 'Сайттағы ақпарат дәрігер кеңесін алмастырмайды', showAll: 'Барлығын көру', showLess: 'Жинау', mobileCall: 'Қоңырау',
   },
 } as const;
@@ -107,7 +113,10 @@ export default function Home() {
 
   useEffect(() => {
     const stored = window.localStorage.getItem('akadent-language');
-    if (stored === 'kk' || stored === 'ru') setLang(stored);
+    if (stored === 'kk' || stored === 'ru') {
+      setLang(stored);
+      document.documentElement.lang = stored;
+    }
   }, []);
   const changeLanguage = useCallback((next: Lang) => {
     setLang(next);
@@ -208,9 +217,9 @@ export default function Home() {
     <main className="aurora-page">
       <header className={'site-nav ' + (scrolled ? 'scrolled' : '')}>
         <div className="site-container flex h-full items-center justify-between">
-          <a href="#top" className="flex items-center gap-3" aria-label="AKA-DENT — на главную">
+          <a href="#top" className="flex items-center gap-3" aria-label={t.homeLabel}>
             <span className="brand-mark"><span /><span /><span /></span>
-            <span><span className="block text-[17px] font-extrabold tracking-[.18em] text-[#111E61]">AKA-DENT</span><span className="block text-[7px] font-bold uppercase tracking-[.28em] text-[#7580A8]">стоматология</span></span>
+            <span className="brand-copy"><span className="block text-[17px] font-extrabold tracking-[.18em] text-[#111E61]">AKA-DENT</span><span className="block text-[7px] font-bold uppercase tracking-[.28em] text-[#7580A8]">{t.brandType}</span></span>
           </a>
           <nav className="hidden items-center gap-8 text-[13px] font-semibold lg:flex" aria-label={lang === 'kk' ? 'Негізгі навигация' : 'Основная навигация'}>
             {t.nav.map((label, index) => <a key={label} className="nav-link" href={['#services','#process','#reviews','#prices','#faq'][index]}>{label}</a>)}
@@ -226,9 +235,9 @@ export default function Home() {
 
       <div id="mobile-navigation" className={'mobile-layer ' + (menuOpen ? 'open' : '')} onClick={() => setMenuOpen(false)} aria-hidden={!menuOpen}>
         <div className="mobile-drawer" onClick={(event) => event.stopPropagation()}>
-          <button type="button" className="absolute right-5 top-5 grid h-11 w-11 place-items-center rounded-full border border-black/10" onClick={() => setMenuOpen(false)} aria-label="Закрыть меню"><X size={19} /></button>
+          <button type="button" className="absolute right-5 top-5 grid h-11 w-11 place-items-center rounded-full border border-black/10" onClick={() => setMenuOpen(false)} aria-label={t.closeMenu}><X size={19} /></button>
           <div className="display mb-9 text-4xl font-semibold">{t.menu}</div>
-          <nav className="flex flex-col gap-1 text-xl font-semibold" aria-label="Мобильная навигация">
+          <nav className="flex flex-col gap-1 text-xl font-semibold" aria-label={t.mobileNav}>
             {t.nav.map((label, index) => ([label, ['#services','#process','#reviews','#prices','#faq'][index]])).map(([label, href]) => (
               <a key={href} href={href} onClick={() => setMenuOpen(false)} className="flex items-center justify-between border-b border-black/[.07] py-4">{label}<ArrowUpRight size={18} /></a>
             ))}
@@ -238,7 +247,7 @@ export default function Home() {
       </div>
 
       <section id="top" className="hero">
-        <div className="hero-photo-wrap"><img ref={heroImageRef} src={heroPhoto} alt="Врач AKA-DENT проводит осмотр пациента" loading="eager" decoding="async" className="hero-photo" /></div>
+        <div className="hero-photo-wrap"><img ref={heroImageRef} src={heroPhoto} alt={t.heroAlt} loading="eager" decoding="async" className="hero-photo" /></div>
         <div className="hero-blob left-[-100px] top-[22%] h-[320px] w-[320px] bg-[#5368FF]/14 blur-2xl" />
         <div className="hero-blob right-[8%] top-[20%] h-[170px] w-[170px] border border-white/50 bg-[#1B2E88]/10 backdrop-blur-sm" style={{ animationDelay: '-2s' }} />
         <div className="site-container hero-content">
@@ -267,9 +276,9 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-y border-black/[.06] bg-white py-8" aria-label="Партнёры">
-        <div className="site-container mb-7 text-center text-[10px] font-bold uppercase tracking-[.18em] text-[#7B858A]">В одной клинике:</div>
-        <div className="marquee-mask"><div className="marquee-track">{[0,1].map((copy) => <div key={copy} className="flex">{['3D-диагностика','Имплантация','Ортопедия','Терапия','Хирургия','Пародонтология'].map((brand) => <span className="logo-name" key={copy + brand}>{brand}</span>)}</div>)}</div></div>
+      <section className="border-y border-black/[.06] bg-white py-8" aria-label={t.areasLabel}>
+        <div className="site-container mb-7 text-center text-[10px] font-bold uppercase tracking-[.18em] text-[#7B858A]">{t.clinicAreas}</div>
+        <div className="marquee-mask"><div className="marquee-track">{[0,1].map((group) => <div key={group} className="flex">{t.areas.map((area) => <span className="logo-name" key={group + area}>{area}</span>)}</div>)}</div></div>
       </section>
 
       <section id="services" className="section-space">
@@ -369,7 +378,7 @@ export default function Home() {
           </div>
           <div className={'price-live-grid ' + (pricesExpanded ? 'is-expanded' : '')}>
             {services.map((service, index) => <article data-reveal key={service.id} className="pricing-card" style={{ transitionDelay: (index % 3) * 80 + 'ms' }}>
-              <div className="flex items-start justify-between"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-[#EEF1FF] text-[#3247C5]"><Check size={23} /></span><span className="text-[10px] font-bold uppercase tracking-[.14em] opacity-60">{service.slug}</span></div>
+              <div className="flex items-start justify-between"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-[#EEF1FF] text-[#3247C5]"><Check size={23} /></span><span className="text-[10px] font-bold uppercase tracking-[.14em] opacity-60">{t.serviceLabel}</span></div>
               <h3 className="card-title mt-8">{lang === 'kk' ? service.title_kk : service.title_ru}</h3><p className="mt-3 min-h-12 text-sm leading-6 opacity-70">{lang === 'kk' ? service.description_kk : service.description_ru}</p>
               <div className="price-block mt-7"><span className="price-prefix">{t.from}</span><div className="price-amount"><span className="price">{service.price_from.toLocaleString(lang === 'kk' ? 'kk-KZ' : 'ru-RU')}</span><span className="price-currency">₸</span></div></div>
               <a href="#booking" className="primary-btn mt-auto px-6 py-4 text-sm font-bold">{t.book} <ArrowUpRight size={17} /></a>
@@ -390,11 +399,11 @@ export default function Home() {
             {faqs.map((faq, index) => {
               const isOpen = openFaq === index;
               return (
-                <article key={faq.q} data-reveal className={'faq-item ' + (isOpen ? 'open' : '')} style={{ transitionDelay: (index % 2) * 80 + 'ms' }}>
-                  <button type="button" className="flex w-full items-center justify-between gap-5 bg-transparent px-5 py-5 text-left text-sm font-bold" onClick={() => setOpenFaq(isOpen ? null : index)} aria-expanded={isOpen}>
+                <article key={'faq-' + index} data-reveal className={'faq-item ' + (isOpen ? 'open' : '')} style={{ transitionDelay: (index % 2) * 80 + 'ms' }}>
+                  <button type="button" className="flex w-full items-center justify-between gap-5 bg-transparent px-5 py-5 text-left text-sm font-bold" onClick={() => setOpenFaq(isOpen ? null : index)} aria-expanded={isOpen} aria-controls={'faq-answer-' + index}>
                     <span>{faq.q}</span><span className="chevron grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white text-[#3247C5] shadow-sm"><ChevronDown size={17} /></span>
                   </button>
-                  <div className="faq-answer"><p className="px-5 pb-6 pr-14 text-sm leading-7 text-[#647077]">{faq.a}</p></div>
+                  <div id={'faq-answer-' + index} className="faq-answer"><p className="px-5 pb-6 pr-14 text-sm leading-7 text-[#647077]">{faq.a}</p></div>
                 </article>
               );
             })}
@@ -424,7 +433,7 @@ export default function Home() {
             </div>
           </div>
           <div data-reveal className="mt-5 grid gap-5 md:grid-cols-3">
-            <div className="contact-card"><span className="contact-icon"><MapPin size={21} /></span><div><span className="text-[10px] font-extrabold uppercase tracking-[.14em] text-[#7A849B]">{t.address}</span><strong className="mt-2 block text-base text-[#111E61]">Комиссарова, 28</strong><span className="mt-1 block text-xs text-[#6B7489]">{t.city}</span></div></div>
+            <div className="contact-card"><span className="contact-icon"><MapPin size={21} /></span><div><span className="text-[10px] font-extrabold uppercase tracking-[.14em] text-[#7A849B]">{t.address}</span><strong className="mt-2 block text-base text-[#111E61]">{t.addressLine}</strong><span className="mt-1 block text-xs text-[#6B7489]">{t.city}</span></div></div>
             <a href="tel:+77001215454" className="contact-card group"><span className="contact-icon"><Phone size={21} /></span><div><span className="text-[10px] font-extrabold uppercase tracking-[.14em] text-[#7A849B]">{t.booking}</span><strong className="mt-2 block text-base text-[#111E61]">+7 700 121-54-54</strong><span className="mt-1 block text-xs text-[#6B7489]">{t.callWa}</span></div><ArrowUpRight className="ml-auto text-[#3247C5] transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" size={18} /></a>
             <div className="contact-card"><span className="contact-icon"><Clock size={21} /></span><div><span className="text-[10px] font-extrabold uppercase tracking-[.14em] text-[#7A849B]">{t.hours}</span><strong className="mt-2 block text-base text-[#111E61]">{t.schedule}</strong><span className="mt-1 block text-xs text-[#6B7489]">{t.weekend}</span></div></div>
           </div>
@@ -435,9 +444,9 @@ export default function Home() {
         <div className="site-container">
           <div className="grid gap-12 pb-16 sm:grid-cols-2 lg:grid-cols-4">
             <div>
-              <a href="#top" className="flex items-center gap-3" aria-label="AKA-DENT — на главную"><span className="brand-mark"><span /><span /><span /></span><span><span className="block text-[17px] font-extrabold tracking-[.18em] text-[#111E61]">AKA-DENT</span><span className="block text-[7px] font-bold uppercase tracking-[.28em] text-[#7580A8]">стоматология</span></span></a>
+              <a href="#top" className="flex items-center gap-3" aria-label={t.homeLabel}><span className="brand-mark"><span /><span /><span /></span><span><span className="block text-[17px] font-extrabold tracking-[.18em] text-[#111E61]">AKA-DENT</span><span className="block text-[7px] font-bold uppercase tracking-[.28em] text-[#7580A8]">{t.brandType}</span></span></a>
               <p className="mt-5 max-w-[250px] text-sm leading-7 text-[#68747A]">{t.footerText}</p>
-              <div className="mt-6 flex gap-2"><a href="https://instagram.com/akadent_stom" target="_blank" rel="noreferrer" className="social-btn" aria-label="AKA-DENT в Instagram"><Camera size={17} /></a><a href="https://wa.me/77001215454" target="_blank" rel="noreferrer" className="social-btn" aria-label="Написать AKA-DENT в WhatsApp"><MessageCircle size={17} /></a></div>
+              <div className="mt-6 flex gap-2"><a href="https://instagram.com/akadent_stom" target="_blank" rel="noreferrer" className="social-btn" aria-label={t.instagramLabel}><Camera size={17} /></a><a href="https://wa.me/77001215454" target="_blank" rel="noreferrer" className="social-btn" aria-label={t.whatsappLabel}><MessageCircle size={17} /></a></div>
             </div>
             <div><h3 className="text-[11px] font-extrabold uppercase tracking-[.14em]">{t.nav[0]}</h3><div className="mt-6 flex flex-col gap-4">{services.slice(0,4).map((service) => <a key={service.id} className="footer-link" href="#services">{lang === 'kk' ? service.title_kk : service.title_ru}</a>)}</div></div>
             <div><h3 className="text-[11px] font-extrabold uppercase tracking-[.14em]">{t.clinic}</h3><div className="mt-6 flex flex-col gap-4"><a className="footer-link" href="#reviews">{t.nav[2]}</a><a className="footer-link" href="#process">{t.nav[1]}</a><a className="footer-link" href="#doctors">{t.meet}</a><a className="footer-link" href="#prices">{t.nav[3]}</a></div></div>
@@ -447,13 +456,13 @@ export default function Home() {
                 <a href="tel:+77001215454" className="footer-link flex items-center gap-3"><Phone size={16} className="text-[#3247C5]" /> +7 700 121-54-54</a>
                 <a href="https://wa.me/77001215454" target="_blank" rel="noreferrer" className="footer-link flex items-center gap-3"><MessageCircle size={16} className="text-[#3247C5]" /> WhatsApp</a>
                 <a href="/admin" className="footer-link flex items-center gap-3"><ShieldCheck size={16} className="text-[#3247C5]" /> {t.admin}</a>
-                <span className="flex items-start gap-3 leading-6"><MapPin size={16} className="mt-1 shrink-0 text-[#3247C5]" /> Караганда, ул. Комиссарова, 28</span>
-                <span className="flex items-center gap-3"><Clock size={16} className="text-[#3247C5]" /> Пн–Пт 09:00–19:00</span>
+                <span className="flex items-start gap-3 leading-6"><MapPin size={16} className="mt-1 shrink-0 text-[#3247C5]" /> {t.footerAddress}</span>
+                <span className="flex items-center gap-3"><Clock size={16} className="text-[#3247C5]" /> {t.footerHours}</span>
               </div>
             </div>
           </div>
           <div className="flex flex-col gap-4 border-t border-black/[.07] py-7 text-[11px] text-[#8A9498] sm:flex-row sm:items-center sm:justify-between">
-            <span>© 2026 AKA-DENT · Қарағанды / Караганда</span>
+            <span>© 2026 AKA-DENT · {t.copyrightCity}</span>
             <div className="flex flex-wrap gap-5"><span>{t.disclaimer}</span><a href="/admin" className="hover:text-[#3247C5]">{t.admin}</a></div>
           </div>
         </div>

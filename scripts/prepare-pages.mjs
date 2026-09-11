@@ -1,7 +1,15 @@
-import { copyFile, mkdir, readdir, writeFile } from 'node:fs/promises';
+import { copyFile, cp, mkdir, readdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const output = join(process.cwd(), 'dist', 'client');
+
+// vinext writes base-path-prefixed assets into dist/client/AKA-DENT/_next.
+// GitHub Pages already mounts the artifact at /AKA-DENT, so those files need
+// to be available from the artifact root for /AKA-DENT/_next/* URLs to work.
+await cp(join(output, 'AKA-DENT', '_next'), join(output, '_next'), {
+  recursive: true,
+  force: true,
+});
 
 async function makePrettyRoute(source, routeDirectory) {
   const target = join(output, routeDirectory);

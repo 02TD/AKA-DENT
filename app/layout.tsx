@@ -1,8 +1,11 @@
 import type { Metadata } from 'next';
 import './globals.css';
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://02td.github.io/AKA-DENT';
+const socialImage = siteUrl + '/og.png';
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://aka-dent-karaganda.gdbhxxh.chatgpt.site'),
+  metadataBase: new URL(siteUrl),
   title: 'AKA-DENT — стоматология полного цикла в Караганде',
   description: 'Лечение, имплантация, протезирование и 3D-диагностика. Караганда, ул. Комиссарова, 28. Запись: +7 700 121-54-54.',
   openGraph: {
@@ -10,14 +13,14 @@ export const metadata: Metadata = {
     description: 'Стоматология полного цикла в Караганде: диагностика, лечение, имплантация и протезирование.',
     type: 'website',
     locale: 'ru_RU',
-    url: 'https://aka-dent-karaganda.gdbhxxh.chatgpt.site',
-    images: [{ url: 'https://aka-dent-karaganda.gdbhxxh.chatgpt.site/og.png', width: 1200, height: 630, alt: 'AKA-DENT — стоматология полного цикла в Караганде' }],
+    url: siteUrl,
+    images: [{ url: socialImage, width: 1200, height: 630, alt: 'AKA-DENT — стоматология полного цикла в Караганде' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'AKA-DENT — стоматология полного цикла',
     description: 'Лечим так, чтобы не переделывать. Караганда, ул. Комиссарова, 28.',
-    images: ['https://aka-dent-karaganda.gdbhxxh.chatgpt.site/og.png'],
+    images: [socialImage],
   },
 };
 

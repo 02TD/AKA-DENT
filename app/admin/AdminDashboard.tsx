@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ArrowUpRight, CalendarDays, Check, CircleDollarSign, ExternalLink, Loader2, LogOut, MessageSquareText, RefreshCw, Save, Stethoscope, UsersRound } from 'lucide-react';
+import { ArrowUpRight, CalendarDays, Check, CircleDollarSign, ExternalLink, Loader2, MessageSquareText, RefreshCw, Save, Stethoscope, UsersRound } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,13 +9,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
 import { appointmentServiceName, buildAppointmentInbox, type Appointment } from '@/lib/appointments';
+import { readDemoData, saveDemoAction, type DemoData, type DemoDoctor, type DemoService, type DemoSetting } from '@/lib/demo-storage';
+import { assetPath, sitePath } from '@/lib/site-path';
 import DoctorPhotoUploader from './DoctorPhotoUploader';
 
-type Service = { id: string; slug: string; title_ru: string; title_kk: string; description_ru: string; description_kk: string; price_from: number | null; price_to: number | null; active: number };
-type Doctor = { slug: string; name_ru: string; name_kk: string; role_ru: string; role_kk: string; bio_ru: string; bio_kk: string; focus_ru: string; focus_kk: string; image_url: string; active: number };
-type Review = { id: string; author: string; rating: number; body_ru: string; body_kk: string; source_url: string; published_at: string; active: number };
-type Setting = { key: string; value_ru: string; value_kk: string };
-type AdminData = { services: Service[]; doctors: Doctor[]; reviews: Review[]; settings: Setting[]; appointments: Appointment[] };
+type Service = DemoService;
+type Doctor = DemoDoctor;
+type Setting = DemoSetting;
+type AdminData = DemoData;
 
 const statusLabels: Record<string, string> = { new: 'Новая', contacted: 'Связались', confirmed: 'Подтверждена', done: 'Завершена', cancelled: 'Отменена' };
 
@@ -50,9 +51,7 @@ export default function AdminDashboard({ user }: { user: { email: string; name: 
   const loadData = useCallback(async () => {
     setLoading(true); setLoadError('');
     try {
-      const response = await fetch('/api/admin', { cache: 'no-store' });
-      if (!response.ok) throw new Error('load');
-      setData(await response.json());
+      setData(readDemoData());
     } catch { setLoadError('Не удалось загрузить данные. Нажмите «Обновить», чтобы попробовать снова.'); }
     finally { setLoading(false); }
   }, []);
@@ -62,9 +61,9 @@ export default function AdminDashboard({ user }: { user: { email: string; name: 
   const saveAction = useCallback(async (key: string, payload: Record<string, unknown>) => {
     setSaving(key); setNotice('');
     try {
-      const response = await fetch('/api/admin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-      if (!response.ok) throw new Error('save');
-      setNotice('Изменения сохранены и уже доступны на сайте');
+      await new Promise((resolve) => window.setTimeout(resolve, 250));
+      saveDemoAction(payload);
+      setNotice('Изменения сохранены в этом браузере и уже доступны на сайте');
       return true;
     } catch { setNotice('Не удалось сохранить. Попробуйте ещё раз.'); return false; }
     finally { setSaving(''); }
@@ -89,7 +88,7 @@ export default function AdminDashboard({ user }: { user: { email: string; name: 
     <main className="admin-shell">
       <header className="admin-topbar">
         <div><div className="admin-kicker">AKA-DENT CONTROL</div><h1>Панель управления</h1><p>Сайт, цены, врачи, отзывы и записи — в одном месте.</p></div>
-        <div className="admin-user"><span><strong>{user.name || 'Владелец'}</strong><small>{user.email}</small></span><a href="/" target="_blank" rel="noreferrer">Открыть сайт <ExternalLink /></a><a href="/signout-with-chatgpt?return_to=/" aria-label="Выйти"><LogOut /></a></div>
+        <div className="admin-user"><span><strong>{user.name || 'Тестовый доступ'}</strong><small>{user.email}</small></span><a href={sitePath('/')} target="_blank" rel="noreferrer">Открыть сайт <ExternalLink /></a></div>
       </header>
 
       <section className="admin-metrics">
@@ -99,6 +98,7 @@ export default function AdminDashboard({ user }: { user: { email: string; name: 
         <div><span className="metric-icon violet"><UsersRound /></span><strong>{data.doctors.length}</strong><small>профилей врачей</small></div>
       </section>
 
+      <div className="admin-notice"><Check /> Демо-режим GitHub: изменения и заявки сохраняются только в этом браузере.</div>
       {notice && <div className="admin-notice"><Check /> {notice}</div>}
       {loadError && <div className="admin-load-error" role="alert">{loadError}</div>}
 
@@ -135,10 +135,10 @@ export default function AdminDashboard({ user }: { user: { email: string; name: 
         <TabsContent value="doctors" className="admin-panel">
           <div className="admin-panel-head"><div><span>Команда</span><h2>Профили врачей</h2><p>Каждый профиль имеет свою публичную страницу на русском и казахском.</p></div></div>
           <div className="admin-doctor-list">{data.doctors.map((doctor) => <article className="admin-doctor-card" key={doctor.slug}>
-            <img src={doctor.image_url} alt={doctor.name_ru} loading="lazy" decoding="async" />
+            <img src={assetPath(doctor.image_url)} alt={doctor.name_ru} loading="lazy" decoding="async" />
             <div className="admin-doctor-form">
-              <div className="admin-card-title"><div><strong>{doctor.name_ru}</strong><small>/doctors/{doctor.slug}</small></div><a href={'/doctors/' + doctor.slug} target="_blank" rel="noreferrer" aria-label="Открыть страницу врача"><ArrowUpRight /></a></div>
-              <DoctorPhotoUploader slug={doctor.slug} name={doctor.name_ru} disabled={Boolean(saving) || Boolean(uploadingDoctor)} onUploaded={(imageUrl) => patchDoctor(doctor.slug, { image_url: imageUrl })} onBusyChange={(busy) => setUploadingDoctor(busy ? doctor.slug : '')} />
+              <div className="admin-card-title"><div><strong>{doctor.name_ru}</strong><small>/doctors/{doctor.slug}</small></div><a href={sitePath('/doctors/' + doctor.slug + '/')} target="_blank" rel="noreferrer" aria-label="Открыть страницу врача"><ArrowUpRight /></a></div>
+              <DoctorPhotoUploader slug={doctor.slug} name={doctor.name_ru} disabled={Boolean(saving) || Boolean(uploadingDoctor)} onUploaded={(imageUrl) => { patchDoctor(doctor.slug, { image_url: imageUrl }); saveDemoAction({ action: 'update_doctor_photo', slug: doctor.slug, image_url: imageUrl }); setNotice('Фотография сохранена в этом браузере'); }} onBusyChange={(busy) => setUploadingDoctor(busy ? doctor.slug : '')} />
               <div className="admin-fields two"><label>Имя RU<Input value={doctor.name_ru} onChange={(event) => patchDoctor(doctor.slug, { name_ru: event.target.value })} /></label><label>Аты KZ<Input value={doctor.name_kk} onChange={(event) => patchDoctor(doctor.slug, { name_kk: event.target.value })} /></label><label>Специализация RU<Input value={doctor.role_ru} onChange={(event) => patchDoctor(doctor.slug, { role_ru: event.target.value })} /></label><label>Мамандану KZ<Input value={doctor.role_kk} onChange={(event) => patchDoctor(doctor.slug, { role_kk: event.target.value })} /></label><label>Фокус RU<Input value={doctor.focus_ru} onChange={(event) => patchDoctor(doctor.slug, { focus_ru: event.target.value })} /></label><label>Фокус KZ<Input value={doctor.focus_kk} onChange={(event) => patchDoctor(doctor.slug, { focus_kk: event.target.value })} /></label></div>
               <div className="admin-fields two"><label>О враче RU<Textarea value={doctor.bio_ru} onChange={(event) => patchDoctor(doctor.slug, { bio_ru: event.target.value })} /></label><label>Дәрігер туралы KZ<Textarea value={doctor.bio_kk} onChange={(event) => patchDoctor(doctor.slug, { bio_kk: event.target.value })} /></label></div>
               <Button className="admin-save" disabled={saving === 'doctor-' + doctor.slug || Boolean(uploadingDoctor)} onClick={() => void saveAction('doctor-' + doctor.slug, { action: 'update_doctor', ...doctor, active: Boolean(doctor.active) })}>{saving === 'doctor-' + doctor.slug ? <Loader2 className="spinner" /> : <Save />} Сохранить профиль</Button>

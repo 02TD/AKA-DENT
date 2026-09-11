@@ -4,7 +4,9 @@ import { useEffect, useState } from 'react';
 import { Check, ImagePlus, Loader2, Upload, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { MAX_PHOTO_BYTES, PHOTO_ACCEPT } from '@/lib/photo-upload';
+
+const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
+const PHOTO_ACCEPT = 'image/jpeg,image/png,image/webp';
 
 const errors: Record<string, string> = {
   too_large: 'Файл больше 8 МБ. Выберите фотографию меньшего размера.',
@@ -17,6 +19,31 @@ const errors: Record<string, string> = {
   photo_changed: 'Фото уже изменилось в другой вкладке. Обновите панель и повторите попытку.',
   storage_unavailable: 'Хранилище фотографий ещё не подключено к опубликованной версии сайта.',
 };
+
+async function compressPhoto(file: File) {
+  const objectUrl = URL.createObjectURL(file);
+  try {
+    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const candidate = new Image();
+      candidate.onload = () => resolve(candidate);
+      candidate.onerror = () => reject(new Error(errors.invalid_image));
+      candidate.src = objectUrl;
+    });
+    const maxSide = 1200;
+    const scale = Math.min(1, maxSide / Math.max(image.naturalWidth, image.naturalHeight));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+    canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error(errors.invalid_image);
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+    if (dataUrl.length > 2_200_000) throw new Error('Фото слишком большое для демо-режима. Выберите фотографию меньшего размера.');
+    return dataUrl;
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
 
 export default function DoctorPhotoUploader({ slug, name, disabled, onUploaded, onBusyChange }: {
   slug: string;
@@ -52,17 +79,8 @@ export default function DoctorPhotoUploader({ slug, name, disabled, onUploaded, 
     if (!file || !ready || busy || disabled) return;
     setBusy(true); onBusyChange(true); setError(''); setSaved(false);
     try {
-      const response = await fetch('/api/admin/doctors/' + encodeURIComponent(slug) + '/photo', {
-        method: 'POST', credentials: 'same-origin',
-        headers: { 'Content-Type': file.type, 'X-Aka-Dent-Upload': '1' },
-        body: file,
-      });
-      const parsed: unknown = await response.json().catch(() => ({}));
-      const result = parsed && typeof parsed === 'object' ? parsed as { error?: unknown; imageUrl?: unknown } : {};
-      const errorCode = typeof result.error === 'string' ? result.error : '';
-      if (!response.ok) throw new Error(errors[errorCode] || 'Фото не удалось сохранить. Проверьте соединение и повторите попытку.');
-      if (typeof result.imageUrl !== 'string' || !result.imageUrl.startsWith('/media/')) throw new Error('Не получен адрес фотографии. Обновите панель, чтобы проверить результат.');
-      onUploaded(result.imageUrl);
+      const imageUrl = await compressPhoto(file);
+      onUploaded(imageUrl);
       setFile(null); setReady(false); setSaved(true);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Не удалось загрузить фото. Попробуйте ещё раз.');
@@ -71,7 +89,7 @@ export default function DoctorPhotoUploader({ slug, name, disabled, onUploaded, 
 
   return <div className="admin-photo-upload" aria-busy={busy}>
     <label className="admin-photo-label" htmlFor={'photo-' + slug}><ImagePlus /> Фотография врача</label>
-    <p>Выберите фото с телефона или компьютера. Оно сохраняется отдельно от остальных полей профиля.</p>
+    <p>Выберите фото с телефона или компьютера. В демо-режиме оно сохранится в этом браузере.</p>
     <Input id={'photo-' + slug} type="file" accept={PHOTO_ACCEPT} disabled={busy || disabled} aria-label={'Выбрать фотографию: ' + name} aria-describedby={'photo-hint-' + slug} onChange={(event) => { selectFile(event.target.files?.[0]); event.target.value = ''; }} />
     <small id={'photo-hint-' + slug}>JPG, PNG или WebP · до 8 МБ. Только фотографии для публикации на сайте.</small>
     {file && previewUrl && <div className="admin-photo-preview">
@@ -81,6 +99,6 @@ export default function DoctorPhotoUploader({ slug, name, disabled, onUploaded, 
       </div>
     </div>}
     {error && <p className="admin-photo-error" role="alert">{error}</p>}
-    {saved && <p className="admin-photo-success" role="status"><Check /> Фото сохранено — оно используется в карточке и на странице врача.</p>}
+    {saved && <p className="admin-photo-success" role="status"><Check /> Фото сохранено в этом браузере — оно используется в карточке и профиле врача.</p>}
   </div>;
 }

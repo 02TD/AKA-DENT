@@ -8,8 +8,10 @@ import {
 } from 'lucide-react';
 import { type FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { doctorsSeed, reviewsSeed, servicesSeed } from '@/db/schema';
+import { DEMO_DATA_EVENT, readDemoPublicData, saveDemoAppointment } from '@/lib/demo-storage';
+import { assetPath, sitePath } from '@/lib/site-path';
 
-const heroPhoto = '/akadent-media/clinic-01.jpg';
+const heroPhoto = assetPath('/akadent-media/clinic-01.jpg');
 type Lang = 'ru' | 'kk';
 type ServiceItem = { id: string; slug: string; title_ru: string; title_kk: string; description_ru: string; description_kk: string; price_from: number; price_to: number | null; unit: string };
 type DoctorItem = { slug: string; name_ru: string; name_kk: string; role_ru: string; role_kk: string; bio_ru: string; bio_kk: string; focus_ru: string; focus_kk: string; image_url: string };
@@ -124,16 +126,17 @@ export default function Home() {
     document.documentElement.lang = next === 'kk' ? 'kk' : 'ru';
   }, []);
   useEffect(() => {
-    let active = true;
-    const load = async () => {
-      try {
-        const response = await fetch('/api/public-data', { cache: 'no-store' });
-        if (response.ok && active) setPublicData(await response.json() as PublicData);
-      } catch { /* keep the static shell available */ }
+    const load = () => setPublicData(readDemoPublicData() as PublicData);
+    const syncFromAnotherTab = (event: StorageEvent) => {
+      if (event.key === 'akadent-github-demo-v1') load();
     };
-    void load();
-    const interval = window.setInterval(load, 60_000);
-    return () => { active = false; window.clearInterval(interval); };
+    load();
+    window.addEventListener(DEMO_DATA_EVENT, load);
+    window.addEventListener('storage', syncFromAnotherTab);
+    return () => {
+      window.removeEventListener(DEMO_DATA_EVENT, load);
+      window.removeEventListener('storage', syncFromAnotherTab);
+    };
   }, []);
 
   useEffect(() => {
@@ -201,9 +204,8 @@ export default function Home() {
     setSubmitting(true);
     setSubmitError(false);
     try {
-      const response = await fetch('/api/appointments', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...booking, language: lang }) });
-      const result = await response.json() as { ok?: boolean };
-      if (!response.ok || !result.ok) throw new Error('save_failed');
+      await new Promise((resolve) => window.setTimeout(resolve, 350));
+      saveDemoAppointment({ ...booking, language: lang });
       setSubmitted(true);
       setBooking({ name: '', phone: '', website: '' });
     } catch {
@@ -265,7 +267,7 @@ export default function Home() {
               <a href="#doctors" className="ghost-btn px-7 py-4 text-[13px] font-bold"><Play size={16} fill="currentColor" /> {t.meet}</a>
             </div>
             <div className="hero-social hero-enter mt-9 flex flex-wrap items-center gap-4" style={{ animationDelay: '650ms', animationDuration: '600ms' }}>
-              <div className="avatar-stack flex">{doctors.slice(0, 4).map((doctor) => <img key={doctor.slug} src={doctor.image_url} alt={lang === 'kk' ? doctor.name_kk : doctor.name_ru} loading="lazy" decoding="async" />)}</div>
+              <div className="avatar-stack flex">{doctors.slice(0, 4).map((doctor) => <img key={doctor.slug} src={assetPath(doctor.image_url)} alt={lang === 'kk' ? doctor.name_kk : doctor.name_ru} loading="lazy" decoding="async" />)}</div>
               <div className="flex items-center gap-2 text-xs font-semibold text-[#4A556D]"><BadgeCheck size={18} className="text-[#3247C5]" /><strong className="text-[#0F0F0F]">{t.ratings}</strong></div>
             </div>
           </div>
@@ -302,8 +304,8 @@ export default function Home() {
           <div id="doctors" data-reveal className="mt-20">
             <span className="eyebrow">{t.teamEye}</span><h2 className="section-title mt-5 max-w-[900px]">{t.teamTitle}</h2><p className="mt-5 max-w-[680px] text-sm leading-7 text-[#667178]">{t.teamText}</p>
             <div className="doctor-profile-grid mt-10">
-              {doctors.map((doctor, index) => <a href={'/doctors/' + doctor.slug} key={doctor.slug} className="doctor-profile-card" style={{ transitionDelay: index * 80 + 'ms' }}>
-                <div className="doctor-profile-image"><img src={doctor.image_url} alt={lang === 'kk' ? doctor.name_kk : doctor.name_ru} loading="lazy" decoding="async" /></div>
+              {doctors.map((doctor, index) => <a href={sitePath('/doctors/' + doctor.slug + '/')} key={doctor.slug} className="doctor-profile-card" style={{ transitionDelay: index * 80 + 'ms' }}>
+                <div className="doctor-profile-image"><img src={assetPath(doctor.image_url)} alt={lang === 'kk' ? doctor.name_kk : doctor.name_ru} loading="lazy" decoding="async" /></div>
                 <div className="doctor-profile-copy"><span>{lang === 'kk' ? doctor.role_kk : doctor.role_ru}</span><h3>{lang === 'kk' ? doctor.name_kk : doctor.name_ru}</h3><p>{lang === 'kk' ? doctor.focus_kk : doctor.focus_ru}</p><strong>{t.chooseDoctor} <ArrowUpRight size={16} /></strong></div>
               </a>)}
             </div>

@@ -1,1 +1,1 @@
-export { default, dynamic, metadata } from '@/app/aka-office/page';
+export { default, metadata } from '@/app/aka-office/page';

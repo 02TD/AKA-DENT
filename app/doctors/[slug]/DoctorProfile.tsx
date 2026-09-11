@@ -1,12 +1,15 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
-import { ArrowLeft, ArrowUpRight, BadgeCheck, CalendarCheck, Check, Loader2, MessageCircle, Phone, ShieldCheck, Stethoscope } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, BadgeCheck, CalendarCheck, Check, Loader2, MessageCircle, Phone, ShieldCheck } from 'lucide-react';
+import { DEMO_DATA_EVENT, readDemoData, saveDemoAppointment } from '@/lib/demo-storage';
+import { assetPath, sitePath } from '@/lib/site-path';
 
 type DoctorRecord = { slug: string; name_ru: string; name_kk: string; role_ru: string; role_kk: string; bio_ru: string; bio_kk: string; focus_ru: string; focus_kk: string; image_url: string };
 
 export default function DoctorProfile({ doctor }: { doctor: DoctorRecord }) {
   const [lang, setLang] = useState<'ru' | 'kk'>('ru');
+  const [profile, setProfile] = useState(doctor);
   const [form, setForm] = useState({ name: '', phone: '', notes: '', website: '' });
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
@@ -17,24 +20,37 @@ export default function DoctorProfile({ doctor }: { doctor: DoctorRecord }) {
       setLang(saved);
       document.documentElement.lang = saved;
     }
-  }, []);
+    const loadProfile = () => {
+      const savedDoctor = readDemoData().doctors.find((item) => item.slug === doctor.slug);
+      if (savedDoctor) setProfile(savedDoctor);
+    };
+    const syncFromAnotherTab = (event: StorageEvent) => {
+      if (event.key === 'akadent-github-demo-v1') loadProfile();
+    };
+    loadProfile();
+    window.addEventListener(DEMO_DATA_EVENT, loadProfile);
+    window.addEventListener('storage', syncFromAnotherTab);
+    return () => {
+      window.removeEventListener(DEMO_DATA_EVENT, loadProfile);
+      window.removeEventListener('storage', syncFromAnotherTab);
+    };
+  }, [doctor.slug]);
   const chooseLang = (next: 'ru' | 'kk') => { setLang(next); window.localStorage.setItem('akadent-language', next); document.documentElement.lang = next; };
   const copy = lang === 'ru' ? {
     back: 'На главную', verified: 'Профиль AKA-DENT', profileIndex: 'AKA / ВРАЧ', bookingIndex: 'ОНЛАЙН / ЗАПИСЬ', focus: 'Основные направления', about: 'О враче', title: 'Записаться к врачу', subtitle: 'Заявка поступит администратору клиники. Мы свяжемся с вами и подберём удобное время.', name: 'Ваше имя', phone: 'Телефон', notes: 'Что вас беспокоит?', submit: 'Отправить заявку', saving: 'Отправляем', done: 'Заявка принята! Администратор AKA-DENT свяжется с вами по указанному номеру.', error: 'Не удалось отправить заявку. Проверьте соединение или позвоните нам.', comfort: 'Единый план лечения', comfortText: 'При необходимости врач подключает коллег по терапии, хирургии и ортопедии.',
   } : {
     back: 'Басты бетке', verified: 'AKA-DENT профилі', profileIndex: 'AKA / ДӘРІГЕР', bookingIndex: 'ОНЛАЙН / ЖАЗЫЛУ', focus: 'Негізгі бағыттар', about: 'Дәрігер туралы', title: 'Дәрігерге жазылу', subtitle: 'Өтінім клиника әкімшісіне түседі. Біз сізге хабарласып, ыңғайлы уақытты таңдаймыз.', name: 'Атыңыз', phone: 'Телефон', notes: 'Сізді не мазалайды?', submit: 'Өтінімді жіберу', saving: 'Жіберілуде', done: 'Өтінім қабылданды! AKA-DENT әкімшісі көрсетілген нөмірге хабарласады.', error: 'Өтінімді жіберу мүмкін болмады. Байланысты тексеріңіз немесе бізге қоңырау шалыңыз.', comfort: 'Біртұтас ем жоспары', comfortText: 'Қажет болса, дәрігер терапия, хирургия және ортопедия мамандарын қосады.',
   };
-  const name = lang === 'ru' ? doctor.name_ru : doctor.name_kk;
-  const role = lang === 'ru' ? doctor.role_ru : doctor.role_kk;
-  const bio = lang === 'ru' ? doctor.bio_ru : doctor.bio_kk;
-  const focus = (lang === 'ru' ? doctor.focus_ru : doctor.focus_kk).split('·').map((item) => item.trim());
+  const name = lang === 'ru' ? profile.name_ru : profile.name_kk;
+  const role = lang === 'ru' ? profile.role_ru : profile.role_kk;
+  const bio = lang === 'ru' ? profile.bio_ru : profile.bio_kk;
+  const focus = (lang === 'ru' ? profile.focus_ru : profile.focus_kk).split('·').map((item) => item.trim());
 
   async function submit(event: FormEvent) {
     event.preventDefault(); setSubmitting(true); setError(false);
     try {
-      const response = await fetch('/api/appointments', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...form, doctorSlug: doctor.slug, serviceSlug: 'doctor-appointment', language: lang }) });
-      const result = await response.json() as { ok?: boolean };
-      if (!response.ok || !result.ok) throw new Error('save');
+      await new Promise((resolve) => window.setTimeout(resolve, 350));
+      saveDemoAppointment({ ...form, doctorSlug: profile.slug, serviceSlug: 'doctor-appointment', language: lang });
       setDone(true); setForm({ name: '', phone: '', notes: '', website: '' });
     } catch {
       setError(true);
@@ -42,8 +58,8 @@ export default function DoctorProfile({ doctor }: { doctor: DoctorRecord }) {
   }
 
   return <main className="doctor-page">
-    <header className="doctor-nav"><a href="/" className="doctor-back"><ArrowLeft /> {copy.back}</a><a href="/" className="doctor-brand">AKA-DENT</a><div className="lang-switch"><button className={lang === 'ru' ? 'active' : ''} onClick={() => chooseLang('ru')}>RU</button><button className={lang === 'kk' ? 'active' : ''} onClick={() => chooseLang('kk')}>KZ</button></div></header>
-    <section className="doctor-hero"><div className="doctor-photo"><img src={doctor.image_url} alt={name} loading="eager" decoding="async" /><span><BadgeCheck /> {copy.verified}</span></div><div className="doctor-intro"><div className="doctor-index">{copy.profileIndex}</div><h1>{name}</h1><p className="doctor-role">{role}</p><p className="doctor-bio">{bio}</p><div className="doctor-focus"><small>{copy.focus}</small><div>{focus.map((item) => <span key={item}><Check /> {item}</span>)}</div></div><div className="doctor-proof"><span><ShieldCheck /></span><div><strong>{copy.comfort}</strong><p>{copy.comfortText}</p></div></div></div></section>
-    <section className="doctor-booking"><div><span className="doctor-index">{copy.bookingIndex}</span><h2>{copy.title}</h2><p>{copy.subtitle}</p><div className="doctor-contact-row"><a href="tel:+77001215454"><Phone /> +7 700 121-54-54</a><a href="https://wa.me/77001215454" target="_blank" rel="noreferrer"><MessageCircle /> WhatsApp</a></div></div>{done ? <div className="doctor-done" role="status" aria-live="polite"><CalendarCheck /><strong>{copy.done}</strong><a href="/">{copy.back} <ArrowUpRight /></a></div> : <form onSubmit={submit} className="doctor-form"><input className="form-honeypot" value={form.website} onChange={(event) => setForm({ ...form, website: event.target.value })} tabIndex={-1} autoComplete="off" aria-hidden="true" /><label>{copy.name}<input required minLength={2} value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} /></label><label>{copy.phone}<input required type="tel" value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} placeholder="+7 ___ ___ __ __" /></label><label>{copy.notes}<textarea value={form.notes} onChange={(event) => setForm({ ...form, notes: event.target.value })} /></label><button disabled={submitting}>{submitting ? <><Loader2 className="spinner" /> {copy.saving}</> : <>{copy.submit} <ArrowUpRight /></>}</button>{error && <p className="doctor-form-error" role="alert">{copy.error}</p>}</form>}</section>
+    <header className="doctor-nav"><a href={sitePath('/')} className="doctor-back"><ArrowLeft /> {copy.back}</a><a href={sitePath('/')} className="doctor-brand">AKA-DENT</a><div className="lang-switch"><button className={lang === 'ru' ? 'active' : ''} onClick={() => chooseLang('ru')}>RU</button><button className={lang === 'kk' ? 'active' : ''} onClick={() => chooseLang('kk')}>KZ</button></div></header>
+    <section className="doctor-hero"><div className="doctor-photo"><img src={assetPath(profile.image_url)} alt={name} loading="eager" decoding="async" /><span><BadgeCheck /> {copy.verified}</span></div><div className="doctor-intro"><div className="doctor-index">{copy.profileIndex}</div><h1>{name}</h1><p className="doctor-role">{role}</p><p className="doctor-bio">{bio}</p><div className="doctor-focus"><small>{copy.focus}</small><div>{focus.map((item) => <span key={item}><Check /> {item}</span>)}</div></div><div className="doctor-proof"><span><ShieldCheck /></span><div><strong>{copy.comfort}</strong><p>{copy.comfortText}</p></div></div></div></section>
+    <section className="doctor-booking"><div><span className="doctor-index">{copy.bookingIndex}</span><h2>{copy.title}</h2><p>{copy.subtitle}</p><div className="doctor-contact-row"><a href="tel:+77001215454"><Phone /> +7 700 121-54-54</a><a href="https://wa.me/77001215454" target="_blank" rel="noreferrer"><MessageCircle /> WhatsApp</a></div></div>{done ? <div className="doctor-done" role="status" aria-live="polite"><CalendarCheck /><strong>{copy.done}</strong><a href={sitePath('/')}>{copy.back} <ArrowUpRight /></a></div> : <form onSubmit={submit} className="doctor-form"><input className="form-honeypot" value={form.website} onChange={(event) => setForm({ ...form, website: event.target.value })} tabIndex={-1} autoComplete="off" aria-hidden="true" /><label>{copy.name}<input required minLength={2} value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} /></label><label>{copy.phone}<input required type="tel" value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} placeholder="+7 ___ ___ __ __" /></label><label>{copy.notes}<textarea value={form.notes} onChange={(event) => setForm({ ...form, notes: event.target.value })} /></label><button disabled={submitting}>{submitting ? <><Loader2 className="spinner" /> {copy.saving}</> : <>{copy.submit} <ArrowUpRight /></>}</button>{error && <p className="doctor-form-error" role="alert">{copy.error}</p>}</form>}</section>
   </main>;
 }
